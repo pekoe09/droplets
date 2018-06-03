@@ -10,7 +10,12 @@ const config = require('./utils/config')
 app.use(cors())
 app.use(bodyParser.json())
 
-app.use(express.static(path.resolve(__dirname, '../react-ui/build', 'index.html')))
+//app.use(express.static(path.resolve(__dirname, '../react-ui/build', 'index.html')))
+app.use(express.static(path.resolve(__dirname, '../react-ui/build')))
+
+app.get('*', (req, res) => {
+  response.sendFile(path.resolve(__dirname, '../react-ui/build', 'index.html'))
+})
 
 const server = http.createServer(app)
 
