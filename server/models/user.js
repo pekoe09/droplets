@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema({
 })
 
 userSchema.virtual('fullName').get(() => {
-  return `${user.firstNames} ${user.lastName}`
+  return (`${this.firstNames} ${this.lastName}`)
 })
 
 userSchema.set('toObject', { virtuals: true })

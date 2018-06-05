@@ -6,12 +6,16 @@ const cors = require('cors')
 const path = require('path')
 
 const config = require('./utils/config')
+const { tokenExtractor } = require('./utils/tokenExtractor')
+const { userExtractor } = require('./utils/userExtractor')
 const mongo = require('./mongo')
 
 const userRouter = require('./controllers/users')
 
 app.use(cors())
 app.use(bodyParser.json())
+app.use(tokenExtractor)
+app.use(userExtractor)
 
 app.use('/api/users', userRouter)
 
@@ -26,9 +30,12 @@ app.use((err, req, res, next) => {
   console.log('Reached error handling')
   console.log(err.message)
   console.log(err.code)
+  console.log(err.stack)
   if (err.isBadRequest) {
     res.status(400).json({ error: err.message })
   } else if (err.isUnauthorizedAttempt) {
+    res.status(401).json({ error: err.message })
+  } else if (err.isForbidden) {
     res.status(403).json({ error: err.message })
   } else {
     res.status(500).json({ error: 'Something has gone wrong' })
