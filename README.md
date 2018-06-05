@@ -1,5 +1,8 @@
 # Droplets
-* Manage and connect small droplets of information
+
+**Manage and connect small droplets of information**
+
+[![Build Status](https://travis-ci.org/pekoe09/droplets.svg?branch=master)](https://travis-ci.org/pekoe09/droplets)
 
 Droplets is a simple system for noting down small pieces of information, creating connections between them and searching/browsing the stored information in a handy, coherent way.
 
