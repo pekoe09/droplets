@@ -27,7 +27,6 @@ app.get('*', (req, res) => {
 })
 
 app.use((err, req, res, next) => {
-  console.log('Reached error handling')
   console.log(err.message)
   // console.log(err.code)
   // console.log(err.stack)

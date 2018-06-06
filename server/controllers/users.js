@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-const { wrapAsync, checkUser } = require('./controllerHelpers')
+const { wrapAsync, checkUser, validateMandatoryFields, validateEmailForm } = require('./controllerHelpers')
 const userRouter = require('express').Router()
 const User = require('../models/user')
 
@@ -65,8 +65,19 @@ userRouter.get('/self', wrapAsync(async (req, res, next) => {
 
 userRouter.put('/self', wrapAsync(async (req, res, next) => {
   await checkUser(req)
+  const mandatories = ['username', 'email', 'firstNames', 'lastName']
+  validateMandatoryFields(req, mandatories, 'User', 'update self')
+  validateEmailForm(req.body.email)
+  const usernameMatches = await User.find({ username: req.body.username })
+  if (usernameMatches.length > 1 || (usernameMatches.length == 1 && usernameMatches[0]._id.toString() !== req.user._id.toString())) {
+    let err = new Error('Username is already in use')
+    err.isBadRequest = true
+    throw err
+  }
+
   const body = req.body
   let user = await User.findById(req.user._id)
+
   user.username = body.username
   user.firstNames = body.firstNames
   user.lastName = body.lastName
