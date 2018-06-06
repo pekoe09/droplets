@@ -1,5 +1,9 @@
 # Droplets
-* Manage and connect small droplets of information
+
+**Manage and connect small droplets of information**
+
+[![Build Status](https://travis-ci.org/pekoe09/droplets.svg?branch=master)](https://travis-ci.org/pekoe09/droplets)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/ce4bc055e2324b27a0043e54125f9586)](https://www.codacy.com/app/juha-kangas/droplets?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=pekoe09/droplets&amp;utm_campaign=Badge_Grade)
 
 Droplets is a simple system for noting down small pieces of information, creating connections between them and searching/browsing the stored information in a handy, coherent way.
 
