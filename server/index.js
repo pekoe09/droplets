@@ -29,8 +29,8 @@ app.get('*', (req, res) => {
 app.use((err, req, res, next) => {
   console.log('Reached error handling')
   console.log(err.message)
-  console.log(err.code)
-  console.log(err.stack)
+  // console.log(err.code)
+  // console.log(err.stack)
   if (err.isBadRequest) {
     res.status(400).json({ error: err.message })
   } else if (err.isUnauthorizedAttempt) {

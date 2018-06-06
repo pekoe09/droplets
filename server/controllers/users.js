@@ -24,18 +24,18 @@ userRouter.post('/register', wrapAsync(async (req, res, next) => {
 userRouter.post('/login', wrapAsync(async (req, res, next) => {
   const body = req.body
   const user = await User
-    .findOne({username: body.username})
+    .findOne({ username: body.username })
     .select({
       _id: 1,
-      username: 1, 
-      passwordHash: 1, 
-      lastName: 1, 
-      firstNames: 1, 
+      username: 1,
+      passwordHash: 1,
+      lastName: 1,
+      firstNames: 1,
       email: 1
     })
-  
+
   const isCorrectPsw = user === null ? false : await bcrypt.compare(body.password, user.passwordHash)
-  if(!user || !isCorrectPsw) {
+  if (!user || !isCorrectPsw) {
     let err = new Error('Invalid username or password')
     err.isUnauthorizedAttempt = true
     throw err
@@ -64,17 +64,15 @@ userRouter.get('/self', wrapAsync(async (req, res, next) => {
 }))
 
 userRouter.put('/self', wrapAsync(async (req, res, next) => {
-  checkUser(req)
-
+  await checkUser(req)
   const body = req.body
   let user = await User.findById(req.user._id)
   user.username = body.username
   user.firstNames = body.firstNames
   user.lastName = body.lastName
   user.email = body.email
-
-  user = await User.findByIdAndUpdate(user._id, user)
-  res.status(201).json(user)
+  const updatedUser = await User.findByIdAndUpdate(user._id, user, { new: true })
+  res.status(201).json(updatedUser)
 }))
 
 module.exports = userRouter

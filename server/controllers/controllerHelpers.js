@@ -7,7 +7,7 @@ const wrapAsync = (fn) => {
 const checkUser = (req) => {
   if(!req.user) {
     let err = new Error('Request does not contain valid user identification')
-    err.isBadRequest = true
+    err.isUnauthorizedAttempt = true
     throw err
   }
 }
