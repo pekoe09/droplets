@@ -92,6 +92,8 @@ describe('PUT /api/users/self', () => {
       .expect(201)
 
     const updatedUser = response.body
+    const usersAfter = await usersInDb()
+    expect(usersAfter.length).toBe(users.length)
     expect(updatedUser.username).toEqual(targetUser.username)
     expect(updatedUser.email).toEqual(targetUser.email)
     expect(updatedUser.lastName).toEqual(targetUser.lastName)
@@ -343,6 +345,245 @@ describe('PUT /api/users/self', () => {
       .set('Authorization', 'Bearer ' + token)
       .send(editedUser)
       .expect(400)
+  })
+
+})
+
+describe('POST /api/users/register', () => {
+
+  let tokenUser = initialUsers[1]
+  let token = null
+
+  beforeEach(async () => {
+    await resetUsers()
+    token = await getToken(tokenUser.username)
+  })
+
+  it('creates a new user', async () => {
+    const usersBefore = await usersInDb()
+    const user = {
+      username: 'newusername',
+      password: 'newpassword',
+      password2: 'newpassword',
+      firstNames: 'newfirstname',
+      lastName: 'newLastname',
+      email: 'new@mail.com'
+    }
+
+    const response = await api
+      .post('/api/users/register')
+      .send(user)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const usersAfter = await usersInDb()
+    const newUser = response.body
+    const newUserInDb = usersAfter.find(u => u.username === newUser.username)
+    expect(usersAfter.length).toBe(usersBefore.length + 1)
+    expect(newUser.username).toEqual(user.username)
+    expect(newUser.firstNames).toEqual(user.firstNames)
+    expect(newUser.lastName).toEqual(user.lastName)
+    expect(newUser.email).toEqual(user.email)
+    expect(newUserInDb.username).toEqual(user.username)
+    expect(newUserInDb.firstNames).toEqual(user.firstNames)
+    expect(newUserInDb.lastName).toEqual(user.lastName)
+    expect(newUserInDb.email).toEqual(user.email)
+  })
+
+  it('does not accept user without username', async () => {
+    const usersBefore = await usersInDb()
+    const user = {
+      password: 'newpassword',
+      password2: 'newpassword',
+      firstNames: 'newfirstname',
+      lastName: 'newLastname',
+      email: 'new@mail.com'
+    }
+
+    const response = await api
+      .post('/api/users/register')
+      .send(user)
+      .expect(400)
+
+    const usersAfter = await usersInDb()
+    expect(usersBefore.length).toBe(usersAfter.length)
+  })
+
+  it('does not accept user with empty string as username', async () => {
+    const usersBefore = await usersInDb()
+    const user = {
+      username: ' ',
+      password: 'newpassword',
+      password2: 'newpassword',
+      firstNames: 'newfirstname',
+      lastName: 'newLastname',
+      email: 'new@mail.com'
+    }
+
+    const response = await api
+      .post('/api/users/register')
+      .send(user)
+      .expect(400)
+
+    const usersAfter = await usersInDb()
+    expect(usersBefore.length).toBe(usersAfter.length)
+  })
+
+  it('does not accept username already in use', async () => {
+    const usersBefore = await usersInDb()
+    const user = {
+      username: usersBefore[0].username,
+      password: 'newpassword',
+      password2: 'newpassword',
+      firstNames: 'newfirstname',
+      lastName: 'newLastname',
+      email: 'new@mail.com'
+    }
+
+    const response = await api
+      .post('/api/users/register')
+      .send(user)
+      .expect(400)
+
+    const usersAfter = await usersInDb()
+    expect(usersBefore.length).toBe(usersAfter.length)
+  })
+
+  it('does not accept user without email', async () => {
+    const usersBefore = await usersInDb()
+    const user = {
+      username: 'newusername',
+      password: 'newpassword',
+      password2: 'newpassword',
+      firstNames: 'newfirstname',
+      lastName: 'newLastname'
+    }
+
+    const response = await api
+      .post('/api/users/register')
+      .send(user)
+      .expect(400)
+
+    const usersAfter = await usersInDb()
+    expect(usersBefore.length).toBe(usersAfter.length)
+  })
+
+  it('does not accept user with empty string as email', async () => {
+    const usersBefore = await usersInDb()
+    const user = {
+      username: 'newusername',
+      password: 'newpassword',
+      password2: 'newpassword',
+      firstNames: 'newfirstname',
+      lastName: 'newLastname',
+      email: ' '
+    }
+
+    const response = await api
+      .post('/api/users/register')
+      .send(user)
+      .expect(400)
+
+    const usersAfter = await usersInDb()
+    expect(usersBefore.length).toBe(usersAfter.length)
+  })
+
+  it('does not accept user with malformed email', async () => {
+    const usersBefore = await usersInDb()
+    const user = {
+      username: 'newusername',
+      password: 'newpassword',
+      password2: 'newpassword',
+      firstNames: 'newfirstname',
+      lastName: 'newLastname',
+      email: 'newmail¨.com'
+    }
+
+    const response = await api
+      .post('/api/users/register')
+      .send(user)
+      .expect(400)
+
+    const usersAfter = await usersInDb()
+    expect(usersBefore.length).toBe(usersAfter.length)
+  })
+
+  it('does not accept user without last name', async () => {
+    const usersBefore = await usersInDb()
+    const user = {
+      username: 'newusername',
+      password: 'newpassword',
+      password2: 'newpassword',
+      firstNames: 'newfirstname',
+      email: 'new@mail.com'
+    }
+
+    const response = await api
+      .post('/api/users/register')
+      .send(user)
+      .expect(400)
+
+    const usersAfter = await usersInDb()
+    expect(usersBefore.length).toBe(usersAfter.length)
+  })
+
+  it('does not accept user with empty string as last name', async () => {
+    const usersBefore = await usersInDb()
+    const user = {
+      username: 'newusername',
+      password: 'newpassword',
+      password2: 'newpassword',
+      firstNames: 'newfirstname',
+      lastName: ' ',
+      email: 'new@mail.com'
+    }
+
+    const response = await api
+      .post('/api/users/register')
+      .send(user)
+      .expect(400)
+
+    const usersAfter = await usersInDb()
+    expect(usersBefore.length).toBe(usersAfter.length)
+  })
+
+  it('does not accept user without first name', async () => {
+    const usersBefore = await usersInDb()
+    const user = {
+      username: 'newusername',
+      password: 'newpassword',
+      password2: 'newpassword',
+      lastName: 'newLastname',
+      email: 'new@mail.com'
+    }
+
+    const response = await api
+      .post('/api/users/register')
+      .send(user)
+      .expect(400)
+
+    const usersAfter = await usersInDb()
+    expect(usersBefore.length).toBe(usersAfter.length)
+  })
+
+  it('does not accept user with empty string as first name', async () => {
+    const usersBefore = await usersInDb()
+    const user = {
+      username: 'newusername',
+      password: 'newpassword',
+      password2: 'newpassword',
+      firstNames: ' ',
+      lastName: 'newLastname',
+      email: 'new@mail.com'
+    }
+
+    const response = await api
+      .post('/api/users/register')
+      .send(user)
+      .expect(400)
+
+    const usersAfter = await usersInDb()
+    expect(usersBefore.length).toBe(usersAfter.length)
   })
 
 })

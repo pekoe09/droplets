@@ -16,7 +16,7 @@ const validateMandatoryField = (req, fieldName, entity, operation) => {
   const fieldParts = fieldName.split('.')
   let fieldFound = false
   if (fieldParts.length === 1) {
-    fieldFound = req.body[fieldName]
+    fieldFound = req.body[fieldName] && req.body[fieldName].toString().trim().length > 0
   } else if (fieldParts.length === 2) {
     fieldFound = req.body[fieldParts[0]][fieldParts[1]]
   }
@@ -35,7 +35,7 @@ const validateEmailForm = (email) => {
   const re = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
   const isValid = re.test(email.toLowerCase())
   if (!isValid) {
-    let err = new Error('Email is in invalidu format')
+    let err = new Error('Email is in invalid format')
     err.isBadRequest = true
     throw err
   }
