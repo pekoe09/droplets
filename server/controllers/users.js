@@ -74,7 +74,7 @@ userRouter.get('/self', wrapAsync(async (req, res, next) => {
 }))
 
 userRouter.put('/self', wrapAsync(async (req, res, next) => {
-  await checkUser(req)
+  checkUser(req)
   const mandatories = ['username', 'email', 'firstNames', 'lastName']
   validateMandatoryFields(req, mandatories, 'User', 'update self')
   validateEmailForm(req.body.email)
