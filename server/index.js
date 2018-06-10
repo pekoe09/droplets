@@ -10,6 +10,7 @@ const { tokenExtractor } = require('./utils/tokenExtractor')
 const { userExtractor } = require('./utils/userExtractor')
 const mongo = require('./mongo')
 
+const teamRouter = require('./controllers/teams')
 const userRouter = require('./controllers/users')
 
 app.use(cors())
@@ -17,6 +18,7 @@ app.use(bodyParser.json())
 app.use(tokenExtractor)
 app.use(userExtractor)
 
+app.use('/api/teams', teamRouter)
 app.use('/api/users', userRouter)
 
 //app.use(express.static(path.resolve(__dirname, '../react-ui/build', 'index.html')))
