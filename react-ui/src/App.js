@@ -1,21 +1,23 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { Container } from 'semantic-ui-react'
+import { Route, withRouter } from 'react-router-dom'
+import { connect } from 'react-redux'
 
-class App extends Component {
+import FrontPage from './components/structure/frontPage'
+import Registration from './components/users/registration'
+
+class App extends React.Component {
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
-    );
+      <Container>
+        <Route exact path='/' render={() => <FrontPage />} />
+
+        <Route exact path='/users/register' render={() => <Registration />} />
+      </Container>
+    )
   }
 }
 
-export default App;
+export default withRouter(connect(
+  null
+)(App))
