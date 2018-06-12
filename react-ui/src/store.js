@@ -23,7 +23,7 @@ export const rootReducer = (state, action) => {
 }
 
 export const persistConfig = {
-  key: 'root',
+  key: 'droplets',
   storage,
   stateReconciler: autoMergeLevel2
 }

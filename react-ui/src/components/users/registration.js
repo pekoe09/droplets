@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom'
 import { Form, Input, Button } from 'semantic-ui-react'
 import ViewHeader from '../structure/viewHeader'
 import LinkButton from '../structure/linkButton'
-import { register } from '../../reducers/userReducer'
+import { register } from '../../actions/userActions'
 import { addUIMessage } from '../../reducers/uiMessageReducer'
 
 class Registration extends React.Component {
@@ -37,13 +37,17 @@ class Registration extends React.Component {
         firstNames: this.state.firstNames,
         email: this.state.email
       }
-      this.props.register(user)
-      this.props.addUIMessage(
-        `Hi ${user.firstNames}, welcome to use Droplets! Please login with your new username and password.`,
-        'success',
-        10
-      )
-      this.props.history.push('/')
+      await this.props.register(user)
+      if (!this.props.error) {
+        this.props.addUIMessage(
+          `Hi ${user.firstNames}, welcome to use Droplets! Please login with your new username and password.`,
+          'success',
+          10
+        )
+        this.props.history.push('/')
+      } else {
+        this.props.addUIMessage('Registration failed!', 'error', 10)
+      }
     }
   }
 
@@ -51,7 +55,7 @@ class Registration extends React.Component {
     return (
       <div>
         <ViewHeader text='Register to use Droplets!' />
-        <LinkButton text='Cancel' to='/' type='default' />
+        {this.props.registering && <h3>Handling registration...</h3>}        
         <Form onSubmit={this.handleSubmit}>
           <Form.Field required control={Input} width={6} label='Username' name='username'
             value={this.state.username} onChange={this.handleChange} />
@@ -69,6 +73,7 @@ class Registration extends React.Component {
             <Button primary>
               Register!
             </Button>
+            <LinkButton text='Cancel' to='/' type='default' />
           </Form.Field>
         </Form>
       </div>
@@ -76,8 +81,13 @@ class Registration extends React.Component {
   }
 }
 
+const mapStateToProps = store => ({
+  registering: store.users.registering,
+  error: store.users.error
+})
+
 export default withRouter(connect(
-  null,
+  mapStateToProps,
   {
     addUIMessage,
     register
