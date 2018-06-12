@@ -1,5 +1,5 @@
 export const getTokenHeader = () => {
-  const user = JSON.parse(localStorage.getItem('user'))
+  const user = JSON.parse(localStorage.getItem('dropletsuser'))
   if (user && user.token) {
     return `bearer ${user.token}`
   }
