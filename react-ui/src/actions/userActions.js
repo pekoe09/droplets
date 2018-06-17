@@ -6,6 +6,9 @@ export const REGISTER_USER_FAILURE = 'REGISTER_USER_FAILURE'
 export const LOGIN_BEGIN = 'LOGIN_BEGIN'
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
 export const LOGIN_FAILURE = 'LOGIN_FAILURE'
+export const LOGOUT_BEGIN = 'LOGOUT_BEGIN'
+export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS'
+export const LOGOUT_FAILURE = 'LOGOUT_FAILURE'
 
 export const registerUserBegin = () => ({
   type: REGISTER_USER_BEGIN
@@ -35,13 +38,23 @@ export const loginFailure = error => ({
   payload: { error }
 })
 
+export const logoutBegin = () => ({
+  type: LOGOUT_BEGIN
+})
+
+export const logoutSuccess = () => ({
+  type: LOGOUT_SUCCESS
+})
+
+export const logoutFailure = error => ({
+  type: LOGOUT_FAILURE
+})
+
 export const register = (user) => {
   return async (dispatch) => {
     dispatch(registerUserBegin())
-    console.log('Reducer registering')
     try {
       const newUser = await userService.register(user)
-      console.log('Reducer registered', newUser)
       dispatch(registerUserSuccess(newUser))
     } catch (exception) {
       console.log(exception)
@@ -59,6 +72,19 @@ export const login = (credentials) => {
     } catch (exception) {
       console.log(exception)
       dispatch(loginFailure(exception))
+    }
+  }
+}
+
+export const logout = () => {
+  return async (dispatch) => {
+    dispatch(logoutBegin())
+    try {
+      userService.logout()
+      dispatch(logoutSuccess())
+    } catch (exception) {
+      console.log(exception)
+      dispatch(logoutFailure(exception))
     }
   }
 }

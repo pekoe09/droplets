@@ -1,6 +1,8 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
 
-const FrontPage = () => {
+const FrontPage = ({ currentUser }) => {
   return (
     <div>
       Droplets frontpage
@@ -8,4 +10,10 @@ const FrontPage = () => {
   )
 }
 
-export default FrontPage
+const mapStateToProps = store => ({
+  currentUser: store.users.currentUser
+})
+
+export default withRouter(connect(
+  mapStateToProps
+)(FrontPage))

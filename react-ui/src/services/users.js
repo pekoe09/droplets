@@ -16,7 +16,12 @@ const login = async (credentials) => {
   return response.data
 }
 
+const logout = () => {
+  localStorage.removeItem('dropletsuser')
+}
+
 export default {
   login,
+  logout,
   register
 }

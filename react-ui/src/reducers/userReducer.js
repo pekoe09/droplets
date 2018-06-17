@@ -4,7 +4,10 @@ import {
   REGISTER_USER_FAILURE,
   LOGIN_BEGIN,
   LOGIN_SUCCESS,
-  LOGIN_FAILURE
+  LOGIN_FAILURE,
+  LOGOUT_BEGIN,
+  LOGOUT_SUCCESS,
+  LOGOUT_FAILURE
 } from '../actions/userActions'
 
 const initialState = {
@@ -12,6 +15,7 @@ const initialState = {
   currentUser: null,
   registering: false,
   loggingIn: false,
+  loggingOut: false,
   error: null
 }
 
@@ -40,6 +44,7 @@ const userReducer = (store = initialState, action) => {
       return {
         ...store,
         loggingIn: true,
+        loggingOut: false,
         error: null
       }
     case LOGIN_SUCCESS:
@@ -47,12 +52,36 @@ const userReducer = (store = initialState, action) => {
         ...store,
         currentUser: action.payload.currentUser,
         loggingIn: false,
+        loggingOut: false,
         error: false
       }
     case LOGIN_FAILURE:
       return {
         ...store,
         currentUser: null,
+        loggingIn: false,
+        loggingOut: false,
+        error: action.payload.error
+      }
+    case LOGOUT_BEGIN:
+      return {
+        ...store,
+        loggingOut: true,
+        loggingIn: false,
+        error: null
+      }
+    case LOGOUT_SUCCESS:
+      return {
+        ...store,
+        currentUser: null,
+        loggingOut: false,
+        loggingIn: false,
+        error: null
+      }
+    case LOGOUT_FAILURE:
+      return {
+        ...store,
+        loggingOut: false,
         loggingIn: false,
         error: action.payload.error
       }
