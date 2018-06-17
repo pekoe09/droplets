@@ -2,6 +2,7 @@ const { wrapAsync, checkUser, validateMandatoryField } = require('./controllerHe
 const teamRouter = require('express').Router()
 const Team = require('../models/team')
 const User = require('../models/user')
+const Project = require('../models/project')
 
 teamRouter.get('/', wrapAsync(async (req, res, next) => {
   checkUser(req)
@@ -10,7 +11,7 @@ teamRouter.get('/', wrapAsync(async (req, res, next) => {
     .findById(req.user._id)
     .populate({
       path: 'teams',
-      populate: { path: 'projects' }
+      populate: { path: 'projects owner members' }
     })
   res.json(user.teams)
 }))
@@ -26,11 +27,10 @@ teamRouter.post('/', wrapAsync(async (req, res, next) => {
     projects: []
   })
   team = await team.save()
-
   let user = await User.findById(req.user._id)
   user.teams.push(team._id)
   await User.findByIdAndUpdate(user._id, user)
-
+  
   team = await Team
     .findById(team._id)
     .populate('owner members projects')

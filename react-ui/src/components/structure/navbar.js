@@ -33,12 +33,24 @@ const UnknownUserActions = () => {
   )
 }
 
+const LoggedInActions = () => {
+  return (
+    <Menu.Menu position='left'>
+      <Menu.Item style={menuDropdownStyle}>
+        <NavLink to='/teams'>Teams and Projects</NavLink>
+      </Menu.Item>
+    </Menu.Menu>
+  )
+}
+
 const NavBar = ({ currentUser }) => {
   return (
     <Menu style={menuStyle}>
       <Menu.Header style={menuLogoStyle}>
         <NavLink to='/'><img src='/img/eqma-logo-80_85.png' /></NavLink>
       </Menu.Header>
+
+      {currentUser && <LoggedInActions />}
 
       <Menu.Menu position='right'>
         {!currentUser && <UnknownUserActions />}

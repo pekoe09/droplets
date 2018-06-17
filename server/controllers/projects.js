@@ -2,7 +2,7 @@ const { wrapAsync, checkUser, validateMandatoryFields } = require('./controllerH
 const projectRouter = require('express').Router()
 const Project = require('../models/project')
 
-projectRouter.get('/', wrapAsync(async (req, res, next) {
+projectRouter.get('/', wrapAsync(async (req, res, next) => {
   checkUser(req)
   const mandatories = ['name']
   validateMandatoryFields(req, mandatories, 'Project', 'get')
