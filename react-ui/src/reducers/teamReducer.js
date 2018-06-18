@@ -6,7 +6,9 @@ import {
   TEAM_CREATE_SUCCESS,
   TEAM_CREATE_FAILURE
 } from '../actions/teamActions'
-import { isNull } from 'util';
+import {
+  PROJECT_CREATE_SUCCESS
+} from '../actions/projectActions'
 
 const initialState = {
   items: [],
@@ -54,6 +56,17 @@ const teamReducer = (store = initialState, action) => {
         ...store,
         creating: false,
         error: action.payload.error
+      }
+    case PROJECT_CREATE_SUCCESS:
+      return {
+        ...store,
+        items: store.items.map(i => {
+          const newProject = action.payload.newProject
+          if (i._id.toString() === newProject.team._id.toString()) {
+            i.projects = i.projects.concat(action.payload.newProject)
+          }
+          return i
+        })
       }
     default:
       return store

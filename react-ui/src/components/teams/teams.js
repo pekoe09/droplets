@@ -33,13 +33,17 @@ class Teams extends React.Component {
     await this.props.createTeam(team)
     if (!this.props.error) {
       this.props.addUIMessage(`New team ${team.name} created!`, 'success', 10)
+      this.setState({ name: '' })
     } else {
       this.props.addUIMessage('Could not create a new team', 'error', 10)
     }
   }
 
   handleTeamCreationCancel = () => {
-    this.setState({ openTeamCreationModal: false })
+    this.setState({
+      openTeamCreationModal: false,
+      name: ''
+    })
   }
 
   handleChange = (event, { value }) => {
@@ -47,7 +51,11 @@ class Teams extends React.Component {
   }
 
   teamListItems = () => {
-    return this.props.teams.map(t => <TeamListItem key={t._id} team={t} />)
+    return this.props.teams.map(t =>
+      <TeamListItem
+        key={t._id}
+        team={t}
+      />)
   }
 
   modalActionsStyle = {
