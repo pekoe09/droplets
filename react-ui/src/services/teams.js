@@ -13,7 +13,14 @@ const create = async (team) => {
   return response.data
 }
 
+const remove = async (teamId) => {
+  console.log('Remove service called')
+  const response = await axios.delete(`${baseUrl}/${teamId}`, getConfig())
+  return teamId
+}
+
 export default {
   getAll,
-  create
+  create,
+  remove
 }

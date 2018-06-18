@@ -6,6 +6,9 @@ export const TEAMS_GETALL_FAILURE = 'TEAMS_GETALL_FAILURE'
 export const TEAM_CREATE_BEGIN = 'TEAM_CREATE_BEGIN'
 export const TEAM_CREATE_SUCCESS = 'TEAM_CREATE_SUCCESS'
 export const TEAM_CREATE_FAILURE = 'TEAM_CREATE_FAILURE'
+export const TEAM_DELETE_BEGIN = 'TEAM_DELETE_BEGIN'
+export const TEAM_DELETE_SUCCESS = 'TEAM_DELETE_SUCCESS'
+export const TEAM_DELETE_FAILURE = 'TEAM_DELETE_FAILURE'
 
 export const getAllTeamsBegin = () => ({
   type: TEAMS_GETALL_BEGIN
@@ -35,6 +38,20 @@ export const createTeamFailure = error => ({
   payload: { error }
 })
 
+export const deleteTeamBegin = () => ({
+  type: TEAM_DELETE_BEGIN
+})
+
+export const deleteTeamSuccess = deletedTeamId => ({
+  type: TEAM_DELETE_SUCCESS,
+  payload: { deletedTeamId }
+})
+
+export const deleteTeamFailure = error => ({
+  type: TEAM_DELETE_FAILURE,
+  payload: { error }
+})
+
 export const getAllTeams = () => {
   return async (dispatch) => {
     dispatch(getAllTeamsBegin())
@@ -57,6 +74,19 @@ export const createTeam = team => {
     } catch (error) {
       console.log(error)
       dispatch(createTeamFailure(error))
+    }
+  }
+}
+
+export const deleteTeam = teamId => {
+  return async (dispatch) => {
+    dispatch(deleteTeamBegin())
+    try {
+      const deletedTeamId = await teamService.remove(teamId)
+      dispatch(deleteTeamSuccess(deletedTeamId))
+    } catch (error) {
+      console.log(error)
+      dispatch(deleteTeamFailure(error))
     }
   }
 }

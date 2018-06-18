@@ -1,10 +1,10 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
-import { Button, Form, Header, Input, Modal } from 'semantic-ui-react'
+import { Button, Form, Header, Input, Modal, Confirm } from 'semantic-ui-react'
 import TeamListItem from './teamListItem'
 import ViewHeader from '../structure/viewHeader'
-import { getAllTeams, createTeam } from '../../actions/teamActions'
+import { getAllTeams, createTeam, deleteTeam } from '../../actions/teamActions'
 import { addUIMessage } from '../../reducers/uiMessageReducer'
 
 class Teams extends React.Component {
@@ -12,7 +12,10 @@ class Teams extends React.Component {
     super(props)
     this.state = {
       openTeamCreationModal: false,
-      name: ''
+      openTeamDeleteConfirm: false,
+      name: '',
+      deletionTargetId: '',
+      deletionTargetName: ''
     }
   }
 
@@ -50,11 +53,42 @@ class Teams extends React.Component {
     this.setState({ [event.target.name]: value })
   }
 
+  handleOpenDeleteConfirm = (id, name) => {
+    return () => {
+      this.setState({
+        deletionTargetId: id,
+        deletionTargetName: name,
+        openTeamDeleteConfirm: true
+      })
+    }
+  }
+
+  handleDeleteConfirmation = async () => {
+    this.setState({ openTeamDeleteConfirm: false })
+    console.log('Calling delete on '+ this.state.deletionTargetId)
+    await this.props.deleteTeam(this.state.deletionTargetId)
+    if (!this.props.error) {
+      this.props.addUIMessage(`Deleted team ${this.state.deletionTargetName}!`, 'success', 10)
+      this.setState({ deletionTargetId: '', deletionTargetName: '' })
+    } else {
+      this.props.addUIMessage('Could not delete team', 'error', 10)
+    }
+  }
+
+  handleDeleteCancel = () => {
+    this.setState({
+      openTeamDeleteConfirm: false,
+      deletionTargetId: '',
+      deletionTargetName: ''
+    })
+  }
+
   teamListItems = () => {
     return this.props.teams.map(t =>
       <TeamListItem
         key={t._id}
         team={t}
+        handleDelete={this.handleOpenDeleteConfirm(t._id, t.name)}
       />)
   }
 
@@ -91,6 +125,15 @@ class Teams extends React.Component {
           </Modal.Actions>
         </Modal>
 
+        <Confirm
+          open={this.state.openTeamDeleteConfirm}
+          header={`Deleting ${this.state.deletionTargetName}`}
+          content='Operation is permanent; are you sure?'
+          confirmButton='Yes, delete'
+          onConfirm={this.handleDeleteConfirmation}
+          onCancel={this.handleDeleteCancel}
+        />
+
         {this.teamListItems()}
       </div>
     )
@@ -101,6 +144,7 @@ const mapStateToProps = store => ({
   teams: store.teams.items,
   loading: store.teams.loading,
   creating: store.teams.creating,
+  deleting: store.teams.deleting,
   error: store.teams.error
 })
 
@@ -109,6 +153,7 @@ export default withRouter(connect(
   {
     getAllTeams,
     createTeam,
+    deleteTeam,
     addUIMessage
   }
 )(Teams))

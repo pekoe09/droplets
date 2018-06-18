@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt')
 const { wrapAsync, checkUser, validateMandatoryFields, validateEmailForm } = require('./controllerHelpers')
 const userRouter = require('express').Router()
 const User = require('../models/user')
+const Team = require('../models/team')
 
 userRouter.post('/register', wrapAsync(async (req, res, next) => {
   const mandatories = ['username', 'email', 'firstNames', 'lastName']
@@ -28,6 +29,18 @@ userRouter.post('/register', wrapAsync(async (req, res, next) => {
   })
 
   user = await user.save()
+  let team = new Team({
+    name: 'My team',
+    owner: user._id,
+    members: [user._id],
+    projects: []
+  })
+  team = await team.save()
+  user.teams = [team._id]
+  user = await User
+    .findByIdAndUpdate(user._id, user, { new: true })
+    .populate('teams')
+
   res.status(201).json(user)
 }))
 
@@ -92,7 +105,9 @@ userRouter.put('/self', wrapAsync(async (req, res, next) => {
   user.firstNames = body.firstNames
   user.lastName = body.lastName
   user.email = body.email
-  const updatedUser = await User.findByIdAndUpdate(user._id, user, { new: true })
+  const updatedUser = await User
+    .findByIdAndUpdate(user._id, user, { new: true })
+    .populate('teams')
   res.status(201).json(updatedUser)
 }))
 

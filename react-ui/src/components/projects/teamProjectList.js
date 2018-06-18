@@ -75,15 +75,17 @@ class TeamProjectList extends React.Component {
   render() {
     return (
       <div>
-        <span style={{ fontSize: '1.1em', fontWeight: 700 }}>Projects</span>
-        <Button
-          size='mini'
-          style={{ float: 'right' }}
-          primary
-          onClick={this.handleOpenProjectCreation}
-        >
-          Add a new project
+        <div>
+          <span style={{ fontSize: '1.1em', fontWeight: 700 }}>Projects</span>
+          <Button
+            size='mini'
+            style={{ float: 'right', marginTop: 5 }}
+            primary
+            onClick={this.handleOpenProjectCreation}
+          >
+            Add a new project
         </Button>
+        </div>
 
         <Modal
           open={this.state.openProjectCreationModal}

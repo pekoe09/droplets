@@ -4,7 +4,10 @@ import {
   TEAMS_GETALL_FAILURE,
   TEAM_CREATE_BEGIN,
   TEAM_CREATE_SUCCESS,
-  TEAM_CREATE_FAILURE
+  TEAM_CREATE_FAILURE,
+  TEAM_DELETE_BEGIN,
+  TEAM_DELETE_SUCCESS,
+  TEAM_DELETE_FAILURE
 } from '../actions/teamActions'
 import {
   PROJECT_CREATE_SUCCESS
@@ -14,6 +17,7 @@ const initialState = {
   items: [],
   loading: false,
   creating: false,
+  deleting: false,
   error: null
 }
 
@@ -55,6 +59,25 @@ const teamReducer = (store = initialState, action) => {
       return {
         ...store,
         creating: false,
+        error: action.payload.error
+      }
+    case TEAM_DELETE_BEGIN:
+      return {
+        ...store,
+        deleting: true,
+        error: null
+      }
+    case TEAM_DELETE_SUCCESS:
+      return {
+        ...store,
+        items: store.items.filter(i => i._id.toString() !== action.payload.deletedTeamId.toString()),
+        deleting: false,
+        error: null
+      }
+    case TEAM_DELETE_FAILURE:
+      return {
+        ...store,
+        deleting: false,
         error: action.payload.error
       }
     case PROJECT_CREATE_SUCCESS:
