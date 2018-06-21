@@ -1,10 +1,21 @@
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-const { wrapAsync, checkUser } = require('./controllerHelpers')
+const { wrapAsync, checkUser, validateMandatoryFields, validateEmailForm } = require('./controllerHelpers')
 const userRouter = require('express').Router()
 const User = require('../models/user')
+const Team = require('../models/team')
 
 userRouter.post('/register', wrapAsync(async (req, res, next) => {
+  const mandatories = ['username', 'email', 'firstNames', 'lastName']
+  validateMandatoryFields(req, mandatories, 'User', 'register')
+  validateEmailForm(req.body.email)
+  const usernameMatches = await User.find({ username: req.body.username })
+  if (usernameMatches.length > 0) {
+    let err = new Error('Username is already in use')
+    err.isBadRequest = true
+    throw err
+  }
+
   const body = req.body
   const saltRounds = 10
   const passwordHash = await bcrypt.hash(body.password, saltRounds)
@@ -18,24 +29,36 @@ userRouter.post('/register', wrapAsync(async (req, res, next) => {
   })
 
   user = await user.save()
+  let team = new Team({
+    name: 'My team',
+    owner: user._id,
+    members: [user._id],
+    projects: []
+  })
+  team = await team.save()
+  user.teams = [team._id]
+  user = await User
+    .findByIdAndUpdate(user._id, user, { new: true })
+    .populate('teams')
+
   res.status(201).json(user)
 }))
 
 userRouter.post('/login', wrapAsync(async (req, res, next) => {
   const body = req.body
   const user = await User
-    .findOne({username: body.username})
+    .findOne({ username: body.username })
     .select({
       _id: 1,
-      username: 1, 
-      passwordHash: 1, 
-      lastName: 1, 
-      firstNames: 1, 
+      username: 1,
+      passwordHash: 1,
+      lastName: 1,
+      firstNames: 1,
       email: 1
     })
-  
+
   const isCorrectPsw = user === null ? false : await bcrypt.compare(body.password, user.passwordHash)
-  if(!user || !isCorrectPsw) {
+  if (!user || !isCorrectPsw) {
     let err = new Error('Invalid username or password')
     err.isUnauthorizedAttempt = true
     throw err
@@ -65,16 +88,27 @@ userRouter.get('/self', wrapAsync(async (req, res, next) => {
 
 userRouter.put('/self', wrapAsync(async (req, res, next) => {
   checkUser(req)
+  const mandatories = ['username', 'email', 'firstNames', 'lastName']
+  validateMandatoryFields(req, mandatories, 'User', 'update self')
+  validateEmailForm(req.body.email)
+  const usernameMatches = await User.find({ username: req.body.username })
+  if (usernameMatches.length > 1 || (usernameMatches.length == 1 && usernameMatches[0]._id.toString() !== req.user._id.toString())) {
+    let err = new Error('Username is already in use')
+    err.isBadRequest = true
+    throw err
+  }
 
   const body = req.body
   let user = await User.findById(req.user._id)
+
   user.username = body.username
   user.firstNames = body.firstNames
   user.lastName = body.lastName
   user.email = body.email
-
-  user = await User.findByIdAndUpdate(user._id, user)
-  res.status(201).json(user)
+  const updatedUser = await User
+    .findByIdAndUpdate(user._id, user, { new: true })
+    .populate('teams')
+  res.status(201).json(updatedUser)
 }))
 
 module.exports = userRouter
