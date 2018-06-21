@@ -64,7 +64,7 @@ teamRouter.put('/:id', wrapAsync(async (req, res, next) => {
 teamRouter.delete('/:id', wrapAsync(async (req, res, next) => {
   checkUser(req)
   let team = await Team.findById(req.params.id)
-  if (team.owner.toString() !== req.user._id) {
+  if (team.owner.toString() !== req.user._id.toString()) {
     let err = new Error('User is not the owner of the team')
     err.isUnauthorizedAttempt = true
     throw err

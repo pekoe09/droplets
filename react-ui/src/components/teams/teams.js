@@ -32,7 +32,6 @@ class Teams extends React.Component {
     const team = {
       name: this.state.name
     }
-    console.log('Creating team', team)
     await this.props.createTeam(team)
     if (!this.props.error) {
       this.props.addUIMessage(`New team ${team.name} created!`, 'success', 10)
@@ -65,7 +64,6 @@ class Teams extends React.Component {
 
   handleDeleteConfirmation = async () => {
     this.setState({ openTeamDeleteConfirm: false })
-    console.log('Calling delete on '+ this.state.deletionTargetId)
     await this.props.deleteTeam(this.state.deletionTargetId)
     if (!this.props.error) {
       this.props.addUIMessage(`Deleted team ${this.state.deletionTargetName}!`, 'success', 10)

@@ -65,7 +65,7 @@ projectRouter.delete('/:id', wrapAsync(async (req, res, next) => {
     err.isBadRequest = true
     throw err
   }
-  if (project.team.owner.toString() !== req.user._id) {
+  if (project.team.owner.toString() !== req.user._id.toString()) {
     let err = new Error('User is not the owner of the team which controls this project')
     err.isUnauthorizedAttempt = true
     throw err

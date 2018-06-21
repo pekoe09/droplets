@@ -14,7 +14,6 @@ const create = async (team) => {
 }
 
 const remove = async (teamId) => {
-  console.log('Remove service called')
   const response = await axios.delete(`${baseUrl}/${teamId}`, getConfig())
   return teamId
 }

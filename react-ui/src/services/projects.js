@@ -8,6 +8,12 @@ const create = async (project) => {
   return response.data
 }
 
+const remove = async (projectId) => {
+  const response = await axios.delete(`${baseUrl}/${projectId}`, getConfig())
+  return projectId
+}
+
 export default {
-  create
+  create,
+  remove
 }

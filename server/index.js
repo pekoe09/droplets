@@ -10,6 +10,7 @@ const { tokenExtractor } = require('./utils/tokenExtractor')
 const { userExtractor } = require('./utils/userExtractor')
 const mongo = require('./mongo')
 
+const projectRouter = require('./controllers/projects')
 const teamRouter = require('./controllers/teams')
 const userRouter = require('./controllers/users')
 
@@ -18,6 +19,7 @@ app.use(bodyParser.json())
 app.use(tokenExtractor)
 app.use(userExtractor)
 
+app.use('/api/projects', projectRouter)
 app.use('/api/teams', teamRouter)
 app.use('/api/users', userRouter)
 

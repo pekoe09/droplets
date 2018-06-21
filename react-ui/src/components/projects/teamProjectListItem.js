@@ -1,18 +1,34 @@
 import React from 'react'
+import { Button } from 'semantic-ui-react'
 import ListSubItemHeader from '../structure/listSubItemHeader'
 
 const projectListItemStyle = {
   marginTop: 5,
-  backgroundColor: 'purple',
-  color: 'white',
+  backgroundColor: '#f8edf8',
+  color: 'purple',
   borderRadius: 4,
   padding: 5
 }
 
-const ProjectListItem = ({ project }) => {
+const rightBtnStyle = {
+  marginLeft: 5,
+  float: 'right'
+}
+
+const ProjectListItem = ({ project, handleDelete }) => {
   return (
-    <div>
-      <ListSubItemHeader text={project.name} />
+    <div style={projectListItemStyle}>
+      <div style={{ overflowX: 'hidden' }}>
+        <ListSubItemHeader text={project.name} />
+        <Button
+          size='mini'
+          color='red'
+          onClick={handleDelete}
+          style={rightBtnStyle}
+        >
+          Delete
+      </Button>
+      </div>
     </div>
   )
 }

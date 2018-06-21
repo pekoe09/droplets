@@ -1,9 +1,9 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
-import { Button, Form, Header, Input, Label, Modal } from 'semantic-ui-react'
+import { Button, Form, Header, Input, Label, Modal, Confirm } from 'semantic-ui-react'
 import TeamProjectListItem from './teamProjectListItem'
-import { createProject } from '../../actions/projectActions'
+import { createProject, deleteProject } from '../../actions/projectActions'
 import { addUIMessage } from '../../reducers/uiMessageReducer'
 
 class TeamProjectList extends React.Component {
@@ -11,8 +11,11 @@ class TeamProjectList extends React.Component {
     super(props)
     this.state = {
       openProjectCreationModal: false,
+      openProjectDeleteConfirm: false,
       name: '',
-      description: ''
+      description: '',
+      deletionTargetId: '',
+      deletionTargetName: ''
     }
   }
 
@@ -27,7 +30,6 @@ class TeamProjectList extends React.Component {
       description: this.state.description,
       teamId: this.props.teamId
     }
-    console.log('Creating project', project)
     await this.props.createProject(project)
     if (!this.props.error) {
       this.props.addUIMessage(`New project ${project.name} created!`, 'success', 10)
@@ -53,11 +55,41 @@ class TeamProjectList extends React.Component {
     this.setState({ description: event.target.value })
   }
 
+  handleOpenDeleteConfirm = (id, name) => {
+    return () => {
+      this.setState({
+        deletionTargetId: id,
+        deletionTargetName: name,
+        openProjectDeleteConfirm: true
+      })
+    }
+  }
+
+  handleDeleteConfirmation = async () => {
+    this.setState({ openProjectDeleteConfirm: false })
+    await this.props.deleteProject(this.state.deletionTargetId)
+    if (!this.props.error) {
+      this.props.addUIMessage(`Deleted project ${this.state.deletionTargetName}`, 'success', 10)
+      this.setState({ deletionTargetId: '', deletionTargetName: '' })
+    } else {
+      this.props.addUIMessage('Could not delete project', 'error', 10)
+    }
+  }
+
+  handleDeleteCancel = () => {
+    this.setState({
+      openProjectDeleteConfirm: false,
+      deletionTargetId: '',
+      deletionTargetName: ''
+    })
+  }
+
   projectListItems = () => {
     return this.props.projects.map(p =>
       <TeamProjectListItem
         key={p._id}
         project={p}
+        handleDelete={this.handleOpenDeleteConfirm(p._id, p.name)}
       />)
   }
 
@@ -75,7 +107,7 @@ class TeamProjectList extends React.Component {
   render() {
     return (
       <div>
-        <div>
+        <div style={{ overflowX: 'hidden' }}>
           <span style={{ fontSize: '1.1em', fontWeight: 700 }}>Projects</span>
           <Button
             size='mini'
@@ -114,6 +146,15 @@ class TeamProjectList extends React.Component {
           </Modal.Actions>
         </Modal>
 
+        <Confirm
+          open={this.state.openProjectDeleteConfirm}
+          header={`Deleting ${this.state.deletionTargetName}`}
+          content='Operation is permament; are you sure?'
+          confirmButton='Yes, delete'
+          onConfirm={this.handleDeleteConfirmation}
+          onCancel={this.handleDeleteCancel}
+        />
+
         {this.props.projects.length == 0 && <p>This team does not have any projects yet!</p>}
         {this.props.projects.length > 0 && this.projectListItems()}
       </div>
@@ -123,6 +164,7 @@ class TeamProjectList extends React.Component {
 
 const mapStateToProps = store => ({
   creating: store.projects.creating,
+  deleting: store.projects.deleting,
   error: store.projects.error
 })
 
@@ -130,6 +172,7 @@ export default withRouter(connect(
   mapStateToProps,
   {
     addUIMessage,
-    createProject
+    createProject,
+    deleteProject
   }
 )(TeamProjectList))

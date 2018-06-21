@@ -10,7 +10,8 @@ import {
   TEAM_DELETE_FAILURE
 } from '../actions/teamActions'
 import {
-  PROJECT_CREATE_SUCCESS
+  PROJECT_CREATE_SUCCESS,
+  PROJECT_DELETE_SUCCESS
 } from '../actions/projectActions'
 
 const initialState = {
@@ -88,6 +89,14 @@ const teamReducer = (store = initialState, action) => {
           if (i._id.toString() === newProject.team._id.toString()) {
             i.projects = i.projects.concat(action.payload.newProject)
           }
+          return i
+        })
+      }
+    case PROJECT_DELETE_SUCCESS:
+      return {
+        ...store,
+        items: store.items.map(i => {
+          i.projects = i.projects.filter(p => p._id.toString() !== action.payload.deletedProjectId.toString())
           return i
         })
       }
