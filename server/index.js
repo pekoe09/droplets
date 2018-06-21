@@ -10,6 +10,8 @@ const { tokenExtractor } = require('./utils/tokenExtractor')
 const { userExtractor } = require('./utils/userExtractor')
 const mongo = require('./mongo')
 
+const projectRouter = require('./controllers/projects')
+const teamRouter = require('./controllers/teams')
 const userRouter = require('./controllers/users')
 
 app.use(cors())
@@ -17,6 +19,8 @@ app.use(bodyParser.json())
 app.use(tokenExtractor)
 app.use(userExtractor)
 
+app.use('/api/projects', projectRouter)
+app.use('/api/teams', teamRouter)
 app.use('/api/users', userRouter)
 
 //app.use(express.static(path.resolve(__dirname, '../react-ui/build', 'index.html')))
@@ -27,10 +31,9 @@ app.get('*', (req, res) => {
 })
 
 app.use((err, req, res, next) => {
-  console.log('Reached error handling')
   console.log(err.message)
-  console.log(err.code)
-  console.log(err.stack)
+  // console.log(err.code)
+  // console.log(err.stack)
   if (err.isBadRequest) {
     res.status(400).json({ error: err.message })
   } else if (err.isUnauthorizedAttempt) {
