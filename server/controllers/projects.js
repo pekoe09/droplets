@@ -3,6 +3,7 @@ const projectRouter = require('express').Router()
 const Team = require('../models/team')
 const User = require('../models/user')
 const Project = require('../models/project')
+const Droplet = require('../models/droplet')
 
 projectRouter.post('/', wrapAsync(async (req, res, next) => {
   checkUser(req)
@@ -19,7 +20,8 @@ projectRouter.post('/', wrapAsync(async (req, res, next) => {
   let project = new Project({
     name: req.body.name,
     description: req.body.description,
-    team: req.body.teamId
+    team: req.body.teamId,
+    droplets: []
   })
   project = await project.save()
   team.projects = team.projects.push(project._id)
@@ -70,11 +72,17 @@ projectRouter.delete('/:id', wrapAsync(async (req, res, next) => {
     err.isUnauthorizedAttempt = true
     throw err
   }
+
   let team = await Team.findById(project.team._id)
   if (team) {
     team.projects = team.projects.filter(p => p.toString() !== project._id.toString())
     await Team.findByIdAndUpdate(team._id, team)
   }
+  project.droplets.forEach(async d => {
+    let droplet = await Droplet.findById(d)
+    droplet.projects = droplet.projects.filter(p => p.toString() !== project._id.toString())
+    await Droplet.findByIdAndUpdate(d, droplet)
+  })
 
   await Project.findByIdAndRemove(project._id)
   res.status(204).end()
