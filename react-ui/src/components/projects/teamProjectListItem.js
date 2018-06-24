@@ -27,7 +27,7 @@ const ProjectListItem = ({ project, handleDelete }) => {
           style={rightBtnStyle}
         >
           Delete
-      </Button>
+        </Button>
       </div>
     </div>
   )
