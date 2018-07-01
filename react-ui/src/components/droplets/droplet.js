@@ -29,7 +29,7 @@ class Droplet extends React.Component {
   }
 
   handleAddKeyword = (name) => {
-
+    console.log('Adding keyword ' + name)
   }
 
   render() {

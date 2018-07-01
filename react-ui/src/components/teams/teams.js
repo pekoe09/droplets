@@ -5,6 +5,7 @@ import { Button, Form, Header, Input, Modal, Confirm } from 'semantic-ui-react'
 import TeamListItem from './teamListItem'
 import ViewHeader from '../structure/viewHeader'
 import { getAllTeams, createTeam, deleteTeam } from '../../actions/teamActions'
+import { getAllProjects } from '../../actions/projectActions'
 import { addUIMessage } from '../../reducers/uiMessageReducer'
 
 class Teams extends React.Component {
@@ -21,6 +22,7 @@ class Teams extends React.Component {
 
   componentDidMount = async () => {
     await this.props.getAllTeams()
+    await this.props.getAllProjects()
   }
 
   handleOpenTeamCreation = () => {
@@ -150,6 +152,7 @@ export default withRouter(connect(
   mapStateToProps,
   {
     getAllTeams,
+    getAllProjects,
     createTeam,
     deleteTeam,
     addUIMessage
