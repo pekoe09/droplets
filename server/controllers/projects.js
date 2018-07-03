@@ -5,6 +5,14 @@ const User = require('../models/user')
 const Project = require('../models/project')
 const Droplet = require('../models/droplet')
 
+projectRouter.get('/', wrapAsync(async (req, res, next) => {
+  checkUser(req)
+
+  const projects = await Project.find({ team: { $in: req.user.teams } })
+  console.log('Found projects', projects)
+  res.json(projects)
+}))
+
 projectRouter.post('/', wrapAsync(async (req, res, next) => {
   checkUser(req)
   const mandatories = ['name', 'teamId']

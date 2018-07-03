@@ -1,4 +1,6 @@
 import React from 'react'
+import { Button } from 'semantic-ui-react'
+import ListItemHeader from '../structure/listItemHeader'
 
 const projectBarStyle = {
   backgroundColor: 'magenta',
@@ -7,10 +9,11 @@ const projectBarStyle = {
   flexDirection: 'column'
 }
 
-const ProjectBar = ({ project }) => {
+const ProjectBar = ({ project, handleCreateDroplet }) => {
   return (
     <div style={projectBarStyle}>
-      <p>ProjectBar</p>
+      <ListItemHeader text={project.name} />
+      <Button onClick={handleCreateDroplet}>Create droplet</Button>
     </div>
   )
 }

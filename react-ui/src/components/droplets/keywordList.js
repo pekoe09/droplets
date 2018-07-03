@@ -9,10 +9,15 @@ const KeywordList = ({ keywords }) => {
     return keywords.map(k => <Keyword key={k._id} keyword={k} />)
   }
 
+  const handleAddKeyword = (event) => {
+    event.preventDefault()
+    console.log('Adding keyword')
+  }
+
   return (
     <div>
       <ListSubItemHeader text='Keywords' />
-      <Button success>+</Button>
+      <Button onClick={this.handleAddKeyword}>+</Button>
       {keywords && keywords.length > 0 &&
         mapKeywords()
       }

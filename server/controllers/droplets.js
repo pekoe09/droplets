@@ -14,17 +14,11 @@ dropletRouter.get('/', wrapAsync(async (req, res, next) => {
 
 dropletRouter.post('/', wrapAsync(async (req, res, next) => {
   checkUser(req)
-  const mandatories = ['header', 'text', 'projectId', 'teamId']
+  console.log(req.body)
+  const mandatories = ['header', 'text', 'projectId']
   validateMandatoryFields(req, mandatories, 'Droplet', 'create')
 
-  let team = await Team.findById(req.body.teamId)
-  if (!team) {
-    let err = new Error('Team cannot be found')
-    err.isBadRequest = true
-    throw err
-  }
-
-  let project = await Team.findById(req.body.projectId)
+  let project = await Project.findById(req.body.projectId)
   if (!project) {
     let err = new Error('Project cannot be found')
     err.isBadRequest = true
@@ -37,8 +31,8 @@ dropletRouter.post('/', wrapAsync(async (req, res, next) => {
     text: req.body.text,
     keywords: req.body.keywords,
     owner: req.user._id,
-    projects: [req.body.projectId],
-    teams: [req.body.teamId]
+    projects: [project._id],
+    teams: [project.team]
   })
   droplet = await droplet.save()
   project.droplets = project.droplets.push(droplet._id)

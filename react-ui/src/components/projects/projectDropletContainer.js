@@ -1,4 +1,5 @@
 import React from 'react'
+import Droplet from '../droplets/droplet'
 
 const projectDropletContainerStyle = {
   backgroundColor: 'yellow',
@@ -7,10 +8,18 @@ const projectDropletContainerStyle = {
   flexDirection: 'column'
 }
 
-const ProjectDropletContainer = ({ project }) => {
+const ProjectDropletContainer = ({ project, droplets }) => {
+  const mapDroplets = () => droplets.map(d =>
+    <Droplet
+      key={d._id}
+      initialDroplet={d}
+    />
+  )
+
   return (
     <div style={projectDropletContainerStyle}>
       <p>ProjectDropletContainer</p>
+      {mapDroplets()}
     </div>
   )
 }
