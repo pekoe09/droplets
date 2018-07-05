@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { Button, Form, Header, Input, Modal, Confirm } from 'semantic-ui-react'
-import { createDroplet, getDropletsForProject } from '../../actions/dropletActions'
+import { saveDroplet, getDropletsForProject } from '../../actions/dropletActions'
 import { addUIMessage } from '../../reducers/uiMessageReducer'
 import ProjectBar from './projectBar'
 import ProjectDropletContainer from './projectDropletContainer'
@@ -46,7 +46,7 @@ class Project extends React.Component {
       text: this.state.text,
       keywords: []
     }
-    await this.props.createDroplet(droplet)
+    await this.props.saveDroplet(droplet)
     if (!this.props.dropletError) {
       this.props.addUIMessage(`New droplet ${droplet.header} created!`, 'success', 10)
       this.setState({
@@ -127,7 +127,7 @@ const mapStateToProps = (store, ownProps) => {
 export default withRouter(connect(
   mapStateToProps,
   {
-    createDroplet,
+    saveDroplet,
     getDropletsForProject,
     addUIMessage
   }

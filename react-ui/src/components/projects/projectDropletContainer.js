@@ -2,10 +2,11 @@ import React from 'react'
 import Droplet from '../droplets/droplet'
 
 const projectDropletContainerStyle = {
-  backgroundColor: 'yellow',
+  backgroundColor: '#ffe6ff',
   display: 'flex',
   flex: 1,
-  flexDirection: 'column'
+  flexDirection: 'column',
+  marginTop: 5
 }
 
 const ProjectDropletContainer = ({ project, droplets }) => {
@@ -13,6 +14,7 @@ const ProjectDropletContainer = ({ project, droplets }) => {
     <Droplet
       key={d._id}
       initialDroplet={d}
+      projectId={project._id}
     />
   )
 

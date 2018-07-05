@@ -5,15 +5,14 @@ import ListItemHeader from '../structure/listItemHeader'
 const projectBarStyle = {
   backgroundColor: 'magenta',
   height: 50,
-  display: 'flex',
-  flexDirection: 'column'
+  display: 'inline-block'
 }
 
 const ProjectBar = ({ project, handleCreateDroplet }) => {
   return (
     <div style={projectBarStyle}>
       <ListItemHeader text={project.name} />
-      <Button onClick={handleCreateDroplet}>Create droplet</Button>
+      <Button onClick={handleCreateDroplet} style={{ float: 'right' }}>Create droplet</Button>
     </div>
   )
 }

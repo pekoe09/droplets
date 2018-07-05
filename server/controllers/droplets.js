@@ -14,7 +14,6 @@ dropletRouter.get('/', wrapAsync(async (req, res, next) => {
 
 dropletRouter.post('/', wrapAsync(async (req, res, next) => {
   checkUser(req)
-  console.log(req.body)
   const mandatories = ['header', 'text', 'projectId']
   validateMandatoryFields(req, mandatories, 'Droplet', 'create')
 
@@ -43,8 +42,8 @@ dropletRouter.post('/', wrapAsync(async (req, res, next) => {
 
 dropletRouter.put('/:id', wrapAsync(async (req, res, next) => {
   checkUser(req)
-  const mandatories = ['header', 'text', 'projectId', 'teamId']
-  validateMandatoryFields(req, mandatories, 'Droplet', 'create')
+  const mandatories = ['header', 'text', 'projectId']
+  validateMandatoryFields(req, mandatories, 'Droplet', 'update')
 
   let droplet = await Droplet.findById(req.params.id)
   if (!droplet) {
@@ -53,10 +52,24 @@ dropletRouter.put('/:id', wrapAsync(async (req, res, next) => {
     throw err
   }
 
+  let project = await Project.findById(req.body.projectId)
+  if (!project) {
+    let err = new Error('Project cannot be found')
+    err.isBadRequest = true
+    throw err
+  }
+
   droplet.header = req.body.header
   droplet.summary = req.body.summary
   droplet.text = req.body.text
   droplet.keywords = req.body.keywords
+  if (!droplet.projects.includes(project._id)) {
+    droplet.projects = droplet.projects.concat(project._id)
+  }
+  if (!droplet.teams.includes(project.team)) {
+    droplet.teams = droplet.teams.concat(project.team)
+  }
+
   droplet = await Droplet.findByIdAndUpdate(droplet._id, droplet, { new: true })
   res.status(201).json(droplet)
 }))

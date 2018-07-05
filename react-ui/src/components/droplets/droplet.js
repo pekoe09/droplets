@@ -2,6 +2,8 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { Form, Input, Button, Label } from 'semantic-ui-react'
+import { saveDroplet } from '../../actions/dropletActions'
+import { addUIMessage } from '../../reducers/uiMessageReducer'
 import KeywordList from './keywordList'
 import ListSubItemHeader from '../structure/listSubItemHeader'
 
@@ -21,27 +23,30 @@ class Droplet extends React.Component {
     this.setState({ [event.target.name]: value })
   }
 
-  handleSummaryChange = (event) => {
-    this.setState({ summary: event.target.value })
-  }
-
-  handleTextChange = (event) => {
-    this.setState({ text: event.target.value })
-  }
-
   handleAddKeyword = (name) => {
     console.log('Adding keyword ' + name)
   }
 
   handleToggleClosed = (event) => {
-    event.preventDefault()
-    console.log('Toggling closed')
     this.setState({ isClosed: !this.state.isClosed })
   }
 
-  handleSubmit = (event) => {
+  handleSubmit = async (event) => {
     event.preventDefault()
-    console.log('Form submitting')
+    let droplet = {
+      projectId: this.props.projectId,
+      header: this.state.header,
+      summary: this.state.summary,
+      text: this.state.text,
+      keywords: this.state.keywords
+    }
+    if (this.props.initialDroplet) {
+      droplet._id = this.props.initialDroplet._id
+    }
+    await this.props.saveDroplet(droplet)
+    if (this.props.error) {
+      this.props.addUIMessage('Could not create/update a droplet', 'error', 10)
+    }
   }
 
   closedDropletStyle = {
@@ -53,9 +58,21 @@ class Droplet extends React.Component {
     backgroundColor: 'white'
   }
 
-  rightBtnStyle = {
+  toggleBtnStyle = {
+    float: 'right',
     marginLeft: 5,
-    float: 'right'
+    marginRight: 0,
+    paddingTop: 4,
+    paddingBottom: 4,
+    paddingLeft: 8,
+    paddingRight: 8,
+    fontSize: '1.3em',
+    width: 27
+  }
+
+  saveBtnStyle = {
+    color: 'white',
+    background: 'purple'
   }
 
   render() {
@@ -69,7 +86,7 @@ class Droplet extends React.Component {
               size='mini'
               color='green'
               onClick={this.handleToggleClosed}
-              style={this.rightBtnStyle}
+              style={this.toggleBtnStyle}
             >
               +
             </Button>
@@ -78,26 +95,32 @@ class Droplet extends React.Component {
         {
           !this.state.isClosed &&
           <div>
-            <Button
-              size='mini'
-              color='green'
-              onClick={this.handleToggleClosed}
-              style={this.rightBtnStyle}
-            >
-              -
+            <div style={{ display: 'table', width: '100%' }}>
+              <Button
+                size='mini'
+                color='green'
+                onClick={this.handleToggleClosed}
+                style={this.toggleBtnStyle}
+              >
+                -
             </Button>
-            <Form onSubmit={this.handleSubmit}>
-              <Form.Field required control={Input} label='header' name='header'
-                value={this.state.header} onChange={this.handleChange} />
-              <Form.Field>
-                <Label>Summary</Label>
-                <textarea value={this.state.summary} onChange={this.handleSummaryChange} name='summary' rows={3} />
-              </Form.Field>
-              <Form.Field>
-                <Label>Body text</Label>
-                <textarea value={this.state.text} onChange={this.handleTextChange} name='text' rows={10} />
-              </Form.Field>
-            </Form>
+            </div>
+            <div>
+              <Form onSubmit={this.handleSubmit}>
+                <Form.Field required control={Input} label='Header' name='header'
+                  value={this.state.header} onChange={this.handleChange} />
+                <Form.TextArea rows={3} label='Summary' name='summary'
+                  value={this.state.summary} onChange={this.handleChange} />
+                <Form.TextArea rows={12} label='Text' name='text'
+                  value={this.state.text} onChange={this.handleChange} />
+                <Form.Field>
+                  <Button
+                    style={this.saveBtnStyle}>
+                    Save
+                  </Button>
+                </Form.Field>
+              </Form>
+            </div>
             <KeywordList keywords={this.state.keywords} />
           </div>
         }
@@ -106,6 +129,16 @@ class Droplet extends React.Component {
   }
 }
 
+const mapStateToProps = (store) => {
+  return {
+    error: store.droplets.error
+  }
+}
+
 export default withRouter(connect(
-  null
+  mapStateToProps,
+  {
+    saveDroplet,
+    addUIMessage
+  }
 )(Droplet))
