@@ -20,7 +20,6 @@ const ProjectDropletContainer = ({ project, droplets }) => {
 
   return (
     <div style={projectDropletContainerStyle}>
-      <p>ProjectDropletContainer</p>
       {mapDroplets()}
     </div>
   )

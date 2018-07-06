@@ -87,7 +87,7 @@ class Project extends React.Component {
         <Modal
           open={this.state.openDropletCreationModal}
           basic
-          style={{ top: 0 }}
+          style={{ top: 50 }}
         >
           <Header content='Create a new droplet' />
           <Modal.Content>

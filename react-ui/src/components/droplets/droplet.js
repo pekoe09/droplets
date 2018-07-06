@@ -50,12 +50,10 @@ class Droplet extends React.Component {
   }
 
   closedDropletStyle = {
-    border: 'solid',
-    borderColor: 'purple',
-    borderWidth: 1,
     padding: 5,
     margin: 5,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
+    boxShadow: '1px 1px 1px #a3a3c2'
   }
 
   toggleBtnStyle = {
@@ -67,7 +65,9 @@ class Droplet extends React.Component {
     paddingLeft: 8,
     paddingRight: 8,
     fontSize: '1.3em',
-    width: 27
+    width: 27,
+    color: 'white',
+    background: 'lightsteelblue'
   }
 
   saveBtnStyle = {
@@ -84,7 +84,6 @@ class Droplet extends React.Component {
             <ListSubItemHeader text={this.state.header} />
             <Button
               size='mini'
-              color='green'
               onClick={this.handleToggleClosed}
               style={this.toggleBtnStyle}
             >
@@ -98,7 +97,6 @@ class Droplet extends React.Component {
             <div style={{ display: 'table', width: '100%' }}>
               <Button
                 size='mini'
-                color='green'
                 onClick={this.handleToggleClosed}
                 style={this.toggleBtnStyle}
               >

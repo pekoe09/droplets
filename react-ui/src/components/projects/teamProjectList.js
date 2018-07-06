@@ -122,8 +122,7 @@ class TeamProjectList extends React.Component {
         <Modal
           open={this.state.openProjectCreationModal}
           basic
-          size='small'
-          centered={false}
+          style={{ top: 50 }}
         >
           <Header content='Create a new project' />
           <Modal.Content>

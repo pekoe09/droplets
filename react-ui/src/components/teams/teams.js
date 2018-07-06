@@ -105,8 +105,7 @@ class Teams extends React.Component {
         <Modal
           open={this.state.openTeamCreationModal}
           basic
-          size='small'
-          centered={false}
+          style={{ top: 50 }}
         >
           <Header content='Create a new team' />
           <Modal.Content>
