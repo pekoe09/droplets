@@ -5,6 +5,7 @@ import storage from 'redux-persist/lib/storage'
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2'
 
 import dropletReducer from './reducers/dropletReducer'
+import filterReducer from './reducers/filterReducer'
 import projectReducer from './reducers/projectReducer'
 import teamReducer from './reducers/teamReducer'
 import uiMessageReducer from './reducers/uiMessageReducer'
@@ -12,6 +13,7 @@ import userReducer from './reducers/userReducer'
 
 const appReducer = combineReducers({
   droplets: dropletReducer,
+  filters: filterReducer,
   projects: projectReducer,
   teams: teamReducer,
   uiMessages: uiMessageReducer,
