@@ -30,7 +30,7 @@ const TeamListItem = ({ team, handleDelete }) => {
             style={rightBtnStyle}
           >
             Delete
-        </Button>
+          </Button>
         </span>
       </div>
       <TeamProjectList

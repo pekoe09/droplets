@@ -3,6 +3,11 @@ import { getConfig } from './serviceHelpers'
 
 const baseUrl = '/api/projects'
 
+const getAll = async () => {
+  const response = await axios.get(baseUrl, getConfig())
+  return response.data
+}
+
 const create = async (project) => {
   const response = await axios.post(baseUrl, project, getConfig())
   return response.data
@@ -14,6 +19,7 @@ const remove = async (projectId) => {
 }
 
 export default {
+  getAll,
   create,
   remove
 }

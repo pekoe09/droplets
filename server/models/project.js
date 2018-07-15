@@ -12,7 +12,11 @@ const projectSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Team',
     required: true
-  }
+  },
+  droplets: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Droplet'
+  }]
 })
 
 const Project = mongoose.model('Project', projectSchema)
