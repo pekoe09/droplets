@@ -9,6 +9,9 @@ export const DROPLET_CREATE_FAILURE = 'DROPLET_CREATE_FAILURE'
 export const DROPLET_UPDATE_BEGIN = 'DROPLET_UPDATE_BEGIN'
 export const DROPLET_UPDATE_SUCCESS = 'DROPLET_UPDATE_SUCCESS'
 export const DROPLET_UPDATE_FAILURE = 'DROPLET_UPDATE_FAILURE'
+export const DROPLET_ADD_KEYWORD_BEGIN = 'DROPLET_ADD_KEYWORD_BEGIN'
+export const DROPLET_ADD_KEYWORD_SUCCESS = 'DROPLET_ADD_KEYWORD_SUCCESS'
+export const DROPLET_ADD_KEYWORD_FAILURE = 'DROPLET_ADD_KEYWORD_FAILURE'
 
 export const getDropletsForProjectBegin = () => ({
   type: DROPLETS_GETFORPROJECT_BEGIN
@@ -61,6 +64,23 @@ export const updateDropletFailure = error => ({
   payload: { error }
 })
 
+export const addKeywordBegin = () => ({
+  type: DROPLET_ADD_KEYWORD_BEGIN
+})
+
+export const addKeywordSuccess = (droplet, keyword) => ({
+  type: DROPLET_ADD_KEYWORD_SUCCESS,
+  payload: {
+    droplet,
+    keyword
+  }
+})
+
+export const addKeywordFailure = error => ({
+  type: DROPLET_ADD_KEYWORD_FAILURE,
+  payload: { error }
+})
+
 export const getDropletsForProject = projectId => {
   return async (dispatch) => {
     dispatch(getDropletsForProjectBegin())
@@ -94,6 +114,19 @@ export const saveDroplet = droplet => {
         console.log(error)
         dispatch(updateDropletFailure(error))
       }
+    }
+  }
+}
+
+export const addKeywordToDroplet = (dropletId, keyword) => {
+  return async (dispatch) => {
+    dispatch(addKeywordBegin())
+    try {
+      const dropletKeywordPair = await dropletService.addKeyword(dropletId, keyword)
+      dispatch(addKeywordSuccess(dropletKeywordPair.droplet, dropletKeywordPair.keyword))
+    } catch (error) {
+      console.log(error)
+      dispatch(addKeywordFailure(error))
     }
   }
 }

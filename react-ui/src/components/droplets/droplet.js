@@ -12,19 +12,14 @@ class Droplet extends React.Component {
     super(props)
     this.state = {
       isClosed: true,
-      header: this.props.initialDroplet ? this.props.initialDroplet.header : '',
-      summary: this.props.initialDroplet ? this.props.initialDroplet.summary : '',
-      text: this.props.initialDroplet ? this.props.initialDroplet.text : '',
-      keywords: this.props.initialDroplet ? this.props.initialDroplet.keywords : []
+      header: this.props.droplet ? this.props.droplet.header : '',
+      summary: this.props.droplet ? this.props.droplet.summary : '',
+      text: this.props.droplet ? this.props.droplet.text : ''
     }
   }
 
   handleChange = (event, { value }) => {
     this.setState({ [event.target.name]: value })
-  }
-
-  handleAddKeyword = (name) => {
-    console.log('Adding keyword ' + name)
   }
 
   handleToggleClosed = (event) => {
@@ -33,17 +28,17 @@ class Droplet extends React.Component {
 
   handleSubmit = async (event) => {
     event.preventDefault()
-    let droplet = {
+    let newDroplet = {
       projectId: this.props.projectId,
       header: this.state.header,
       summary: this.state.summary,
       text: this.state.text,
-      keywords: this.state.keywords
+      keywords: this.props.droplet ? this.props.droplet.keywords : []
     }
-    if (this.props.initialDroplet) {
-      droplet._id = this.props.initialDroplet._id
+    if (this.props.droplet) {
+      newDroplet._id = this.props.droplet._id
     }
-    await this.props.saveDroplet(droplet)
+    await this.props.saveDroplet(newDroplet)
     if (this.props.error) {
       this.props.addUIMessage('Could not create/update a droplet', 'error', 10)
     }
@@ -119,7 +114,10 @@ class Droplet extends React.Component {
                 </Form.Field>
               </Form>
             </div>
-            <KeywordList keywords={this.state.keywords} />
+            <KeywordList
+              keywords={this.props.droplet ? this.props.droplet.keywords : []}
+              dropletId={this.props.dropletId}
+            />
           </div>
         }
       </div>
@@ -127,8 +125,14 @@ class Droplet extends React.Component {
   }
 }
 
-const mapStateToProps = (store) => {
+const mapStateToProps = (store, ownProps) => {
+  const dropletItem = store.droplets.items.find(i => i.projectId === ownProps.projectId)
+  let droplet = null
+  if (dropletItem) {
+    droplet = dropletItem.droplets.find(d => d._id === ownProps.dropletId)
+  }
   return {
+    droplet,
     error: store.droplets.error
   }
 }

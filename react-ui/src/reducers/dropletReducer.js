@@ -7,7 +7,10 @@ import {
   DROPLET_CREATE_FAILURE,
   DROPLET_UPDATE_BEGIN,
   DROPLET_UPDATE_SUCCESS,
-  DROPLET_UPDATE_FAILURE
+  DROPLET_UPDATE_FAILURE,
+  DROPLET_ADD_KEYWORD_BEGIN,
+  DROPLET_ADD_KEYWORD_SUCCESS,
+  DROPLET_ADD_KEYWORD_FAILURE
 } from '../actions/dropletActions'
 
 const initialState = {
@@ -103,6 +106,30 @@ const dropletReducer = (store = initialState, action) => {
         ...store,
         updating: false,
         error: action.payload.error
+      }
+    case DROPLET_ADD_KEYWORD_BEGIN:
+      return {
+        ...store,
+        updating: true
+      }
+    case DROPLET_ADD_KEYWORD_SUCCESS:
+      return {
+        ...store,
+        updating: false,
+        items: store.items.map(i => {
+          const updatedDroplet = action.payload.droplet
+          const updatedDropletProjects = updatedDroplet.projects.map(p => p.toString())
+          if (updatedDropletProjects.includes(i.projectId.toString())) {
+            return {
+              projectId: i.projectId,
+              droplets: i.droplets.map(d =>
+                d._id.toString() === updatedDroplet._id.toString() ? updatedDroplet : d
+              )
+            }
+          } else {
+            return i
+          }
+        })
       }
     default:
       return store

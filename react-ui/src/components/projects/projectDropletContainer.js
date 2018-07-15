@@ -20,7 +20,7 @@ const ProjectDropletContainer = ({ project, droplets, dropletFilterText }) => {
     .map(d =>
       <Droplet
         key={d._id}
-        initialDroplet={d}
+        dropletId={d._id}
         projectId={project._id}
       />
     )

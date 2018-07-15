@@ -18,6 +18,11 @@ const update = async (droplet) => {
   return response.data
 }
 
+const addKeyword = async (dropletId, keyword) => {
+  const response = await axios.put(`${baseUrl}/addKeyword/${dropletId}`, keyword, getConfig())
+  return response.data
+}
+
 const remove = async (dropletId) => {
   const response = await axios.delete(`${baseUrl}/${dropletId}`, getConfig())
   return dropletId
@@ -27,5 +32,6 @@ export default {
   getProjectDroplets,
   create,
   update,
+  addKeyword,
   remove
 }

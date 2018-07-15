@@ -3,12 +3,15 @@ const dropletRouter = require('express').Router()
 const Droplet = require('../models/droplet')
 const Project = require('../models/project')
 const Team = require('../models/team')
+const Keyword = require('../models/keyword')
 
 dropletRouter.get('/', wrapAsync(async (req, res, next) => {
   checkUser(req)
 
   // TODO: query string item for different perspectives (team, project, keyword)
-  const droplets = await Droplet.find({ owner: req.user._id })
+  const droplets = await Droplet
+    .find({ owner: req.user._id })
+    .populate('keywords')
   res.json(droplets)
 }))
 
@@ -36,6 +39,9 @@ dropletRouter.post('/', wrapAsync(async (req, res, next) => {
   droplet = await droplet.save()
   project.droplets = project.droplets.push(droplet._id)
   await Project.findByIdAndUpdate(project._id, project)
+  droplet = droplet
+    .findById(droplet._id)
+    .populate('keywords')
 
   res.status(201).json(droplet)
 }))
@@ -70,8 +76,52 @@ dropletRouter.put('/:id', wrapAsync(async (req, res, next) => {
     droplet.teams = droplet.teams.concat(project.team)
   }
 
-  droplet = await Droplet.findByIdAndUpdate(droplet._id, droplet, { new: true })
+  droplet = await Droplet
+    .findByIdAndUpdate(droplet._id, droplet, { new: true })
+    .populate('keywords')
   res.status(201).json(droplet)
+}))
+
+dropletRouter.put('/addKeyword/:id', wrapAsync(async (req, res, next) => {
+  checkUser(req)
+  const mandatories = ['keywordText']
+  validateMandatoryFields(req, mandatories, 'Droplet', 'add keyword')
+
+  let droplet = await Droplet.findById(req.params.id)
+  if (!droplet) {
+    let err = new Error('Droplet cannot be found')
+    err.isBadRequest = true
+    throw err
+  }
+
+  let keyword = await Keyword.find({ name: req.body.keywordText })
+  if (keyword.length === 0) {
+    console.log('Not found keyword')
+    keyword = new Keyword({
+      name: req.body.keywordText,
+      droplets: [droplet._id]
+    })
+    keyword = await keyword.save()
+    console.log('Added keyword')
+  } else if (droplet.keywords.includes(keyword._id)) {
+    console.log('Keyword exists but on dorplet')
+    let err = new Error('Droplet already has the keyword')
+    err.isBadRequest = true
+    throw err
+  } else {
+    console.log('Keyword exists')
+    console.log(keyword)
+    keyword.droplets = keyword.droplets.concat(droplet._id)
+    keyword = await Keyword.findByIdAndUpdate(keyword._id, keyword)
+  }
+
+  console.log('Adding keyword on droplet')
+  console.log(droplet)
+  droplet.keywords = droplet.keywords.concat(keyword)
+  droplet = await Droplet
+    .findByIdAndUpdate(droplet._id, droplet, { new: true })
+    .populate('keywords')
+  res.status(201).json({ keyword, droplet })
 }))
 
 //TODO: adding/removing droplet to/from teams/projects

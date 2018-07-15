@@ -3,7 +3,8 @@ const mongoose = require('mongoose')
 const keywordSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   droplets: [{
     type: mongoose.Schema.Types.ObjectId,

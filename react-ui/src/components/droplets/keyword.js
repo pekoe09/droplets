@@ -2,14 +2,20 @@ import React from 'react'
 
 const keywordStyle = {
   backgroundColor: 'purple',
-  color: 'white'
+  color: 'white',
+  paddingTop: 2,
+  paddingBottom: 2,
+  paddingLeft: 5,
+  paddingRight: 5,
+  margin: 2,
+  borderRadius: 5
 }
 
 const Keyword = ({ keyword }) => {
   return (
-    <div style={keywordStyle}>
-      <p>{keyword.name}</p>
-    </div>
+    <span style={keywordStyle}>
+      <span>{keyword.name}</span>
+    </span>
   )
 }
 
