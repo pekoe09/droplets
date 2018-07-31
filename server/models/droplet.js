@@ -17,6 +17,10 @@ const dropletSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Keyword'
   }],
+  linkedDroplets: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Droplet'
+  }],
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

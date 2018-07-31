@@ -5,13 +5,14 @@ import { Form, Input, Button, Label } from 'semantic-ui-react'
 import { saveDroplet } from '../../actions/dropletActions'
 import { addUIMessage } from '../../reducers/uiMessageReducer'
 import KeywordList from './keywordList'
+import LinkedDropletsList from './linkedDropletsList'
 import ListSubItemHeader from '../structure/listSubItemHeader'
 
 class Droplet extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      isClosed: true,
+      isClosed: !this.props.isOpen,
       header: this.props.droplet ? this.props.droplet.header : '',
       summary: this.props.droplet ? this.props.droplet.summary : '',
       text: this.props.droplet ? this.props.droplet.text : ''
@@ -48,7 +49,9 @@ class Droplet extends React.Component {
     padding: 5,
     margin: 5,
     backgroundColor: 'white',
-    boxShadow: '1px 1px 1px #a3a3c2'
+    color: 'black',
+    boxShadow: '1px 1px 1px #a3a3c2',
+    flexGrow: 1
   }
 
   toggleBtnStyle = {
@@ -117,6 +120,10 @@ class Droplet extends React.Component {
             <KeywordList
               keywords={this.props.droplet ? this.props.droplet.keywords : []}
               dropletId={this.props.dropletId}
+            />
+            <LinkedDropletsList
+              droplet={this.props.droplet}
+              projectId={this.props.projectId}
             />
           </div>
         }

@@ -78,7 +78,7 @@ class KeywordList extends React.Component {
           style={addBtnStyle}
         >
           +
-      </Button>
+        </Button>
         {
           this.state.entryFormVisible &&
           <Form onSubmit={this.handleSubmit}>
