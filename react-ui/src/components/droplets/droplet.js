@@ -1,12 +1,37 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
+import PropTypes from 'prop-types'
+import {
+  DragSource,
+  ConnectDragSource,
+  DragSourceConnector,
+  DragSourceMonitor,
+  DragSourceCollector
+} from 'react-dnd'
+import DnDItemTypes from '../structure/dndItemTypes'
 import { Form, Input, Button, Label } from 'semantic-ui-react'
+
 import { saveDroplet } from '../../actions/dropletActions'
 import { addUIMessage } from '../../reducers/uiMessageReducer'
 import KeywordList from './keywordList'
 import LinkedDropletsList from './linkedDropletsList'
 import ListSubItemHeader from '../structure/listSubItemHeader'
+
+const dropletSource = {
+  beginDrag(props) {
+    return {
+      dropletId: props.dropletId
+    }
+  }
+}
+
+function collect(connect, monitor) {
+  return {
+    connectDragSource: connect.dragSource(),
+    isDragging: monitor.isDragging()
+  }
+}
 
 class Droplet extends React.Component {
   constructor(props) {
@@ -74,7 +99,7 @@ class Droplet extends React.Component {
   }
 
   render() {
-    return (
+    return this.props.connectDragSource(
       <div style={this.closedDropletStyle}>
         {
           this.state.isClosed &&
@@ -144,10 +169,19 @@ const mapStateToProps = (store, ownProps) => {
   }
 }
 
-export default withRouter(connect(
-  mapStateToProps,
-  {
-    saveDroplet,
-    addUIMessage
-  }
-)(Droplet))
+export default DragSource(DnDItemTypes.DROPLET, dropletSource, collect)(
+  withRouter(
+    connect(
+      mapStateToProps,
+      {
+        saveDroplet,
+        addUIMessage
+      }
+    )(Droplet)
+  )
+)
+
+Droplet.propTypes = {
+  connectDragSource: PropTypes.func.isRequired,
+  isDragging: PropTypes.bool.isRequired
+}

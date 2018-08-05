@@ -1,10 +1,11 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
-import { Button, Form, Header, Input, Modal, Confirm } from 'semantic-ui-react'
+import { Button, Form, Header, Input, Modal, Confirm, Segment, Sidebar } from 'semantic-ui-react'
 import { saveDroplet, getDropletsForProject } from '../../actions/dropletActions'
 import { addUIMessage } from '../../reducers/uiMessageReducer'
 import ProjectBar from './projectBar'
+import ProjectDesktop from './projectDesktop'
 import ProjectDropletContainer from './projectDropletContainer'
 
 const projectStyle = {
@@ -18,6 +19,7 @@ class Project extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
+      sidebarVisible: false,
       openDropletCreationModal: false,
       header: '',
       summary: '',
@@ -27,6 +29,10 @@ class Project extends React.Component {
 
   componentDidMount = async () => {
     await this.props.getDropletsForProject(this.props.project._id)
+  }
+
+  handleToggleSidebar = () => {
+    this.setState({ sidebarVisible: !this.state.sidebarVisible })
   }
 
   handleCreateDroplet = () => {
@@ -78,11 +84,26 @@ class Project extends React.Component {
         <ProjectBar
           project={this.props.project}
           handleCreateDroplet={this.handleCreateDroplet}
+          handleToggleSidebar={this.handleToggleSidebar}
         />
-        <ProjectDropletContainer
-          project={this.props.project}
-          droplets={this.props.droplets}
-        />
+        <Sidebar.Pushable as={Segment}>
+          <Sidebar
+            animation='overlay'
+            direction='left'
+            vertical
+            visible={this.state.sidebarVisible}
+          >
+            <ProjectDropletContainer
+              project={this.props.project}
+              droplets={this.props.droplets}
+            />
+          </Sidebar>
+          <Sidebar.Pusher style={{minHeight:'100vh'}}>
+            <Segment basic>
+              <ProjectDesktop />
+            </Segment>
+          </Sidebar.Pusher>
+        </Sidebar.Pushable>
 
         <Modal
           open={this.state.openDropletCreationModal}
