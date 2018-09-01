@@ -171,7 +171,6 @@ export const addKeywordToDroplet = (dropletId, keyword) => {
 
 export const linkDroplet = (dropletId, linkedDropletId) => {
   return async (dispatch) => {
-    console.log('dispatching link from ' + dropletId + ' to ' + linkedDropletId)
     dispatch(linkDropletBegin())
     try {
       const linkedDropletsPair = await dropletService.link(dropletId, linkedDropletId)

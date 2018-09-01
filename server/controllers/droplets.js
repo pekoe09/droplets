@@ -1,4 +1,5 @@
 const { wrapAsync, checkUser, validateMandatoryFields } = require('./controllerHelpers')
+const _ = require('lodash')
 const dropletRouter = require('express').Router()
 const Droplet = require('../models/droplet')
 const Project = require('../models/project')
@@ -130,8 +131,8 @@ dropletRouter.put('/addkeyword/:id', wrapAsync(async (req, res, next) => {
     throw err
   }
 
-  let keyword = await Keyword.find({ name: req.body.keywordText })
-  if (keyword.length === 0) {
+  let keyword = await Keyword.findOne({ name: req.body.keywordText })
+  if (!keyword) {
     console.log('Not found keyword')
     keyword = new Keyword({
       name: req.body.keywordText,
@@ -139,20 +140,21 @@ dropletRouter.put('/addkeyword/:id', wrapAsync(async (req, res, next) => {
     })
     keyword = await keyword.save()
     console.log('Added keyword')
-  } else if (droplet.keywords.includes(keyword._id)) {
-    console.log('Keyword exists but on dorplet')
-    let err = new Error('Droplet already has the keyword')
-    err.isBadRequest = true
-    throw err
   } else {
     console.log('Keyword exists')
-    console.log(keyword)
-    keyword.droplets = keyword.droplets.concat(droplet._id)
-    keyword = await Keyword.findByIdAndUpdate(keyword._id, keyword)
+    let addedKeyword = _.find(droplet.keywords, k => k.toString() === keyword._id.toString())
+    if (addedKeyword) {
+      console.log('Keyword exists already on droplet')
+      let err = new Error('Droplet already has the keyword')
+      err.isBadRequest = true
+      throw err
+    } else {
+      keyword.droplets = keyword.droplets.concat(droplet._id)
+      keyword = await Keyword.findByIdAndUpdate(keyword._id, keyword)
+    }
   }
 
   console.log('Adding keyword on droplet')
-  console.log(droplet)
   droplet.keywords = droplet.keywords.concat(keyword)
   droplet = await Droplet
     .findByIdAndUpdate(droplet._id, droplet, { new: true })

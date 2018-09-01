@@ -84,8 +84,7 @@ class KeywordList extends React.Component {
           <Form onSubmit={this.handleSubmit}>
             <Form.Group>
               <Form.Field
-                control={Input}
-                width={4}
+                control={Input}                
                 placeholder='Enter keyword'
                 name='keywordText'
                 value={this.state.keywordText}

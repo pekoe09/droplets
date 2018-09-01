@@ -1,5 +1,6 @@
 const DnDItemTypes = {
-  DROPLET: 'droplet'
+  DROPLET: 'droplet',
+  KEYWORD: 'keyword'
 }
 
 export default DnDItemTypes

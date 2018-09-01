@@ -92,6 +92,7 @@ class Project extends React.Component {
             direction='left'
             vertical
             visible={this.state.sidebarVisible}
+            style={{width:'50%'}}
           >
             <ProjectDropletContainer
               project={this.props.project}

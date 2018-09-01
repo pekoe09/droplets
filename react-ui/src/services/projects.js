@@ -13,6 +13,11 @@ const create = async (project) => {
   return response.data
 }
 
+const addDropletToDesktop = async (desktopDroplet) => {
+  const response = await axios.put(`${baseUrl}/adddroplettodesktop`, desktopDroplet, getConfig())
+  return response.data
+}
+
 const remove = async (projectId) => {
   const response = await axios.delete(`${baseUrl}/${projectId}`, getConfig())
   return projectId
@@ -21,5 +26,6 @@ const remove = async (projectId) => {
 export default {
   getAll,
   create,
+  addDropletToDesktop,
   remove
 }
