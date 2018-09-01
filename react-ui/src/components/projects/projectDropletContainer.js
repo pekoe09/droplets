@@ -6,10 +6,11 @@ import DropletFilterMenu from '../droplets/dropletFilterMenu'
 
 const projectDropletContainerStyle = {
   backgroundColor: '#ffe6ff',
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  marginTop: 5
+  //display: 'flex',
+  //flex: 1,
+  //flexDirection: 'column',
+  marginTop: 5,
+  minHeight: '100vh'
 }
 
 const ProjectDropletContainer = ({ project, droplets, dropletFilterText }) => {

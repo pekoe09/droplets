@@ -17,10 +17,16 @@ const createDropletBtnStyle = {
   marginRight: 5
 }
 
-const ProjectBar = ({ project, handleCreateDroplet }) => {
+const ProjectBar = ({ project, handleCreateDroplet, handleToggleSidebar }) => {
   return (
     <div style={projectBarStyle}>
       <ListItemHeader text={project.name} />
+      <Button
+        onClick={handleToggleSidebar}
+        style={createDropletBtnStyle}
+      >
+        Show droplet bar
+      </Button>
       <Button
         onClick={handleCreateDroplet}
         style={createDropletBtnStyle}

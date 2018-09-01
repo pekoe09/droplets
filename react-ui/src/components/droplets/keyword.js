@@ -1,4 +1,13 @@
 import React from 'react'
+import PropTypes from 'prop-types'
+import {
+  DragSource,
+  ConnectDragSource,
+  DragSourceConnector,
+  DragSourceMonitor,
+  DragSourceCollector
+} from 'react-dnd'
+import DnDItemTypes from '../structure/dndItemTypes';
 
 const keywordStyle = {
   backgroundColor: 'purple',
@@ -11,12 +20,36 @@ const keywordStyle = {
   borderRadius: 5
 }
 
-const Keyword = ({ keyword }) => {
-  return (
-    <span style={keywordStyle}>
-      <span>{keyword.name}</span>
-    </span>
-  )
+const sourceSpec = {
+  beginDrag(props) {
+    return {
+      keyword: props.keyword
+    }
+  }
 }
 
-export default Keyword
+function collect(connect, monitor) {
+  return {
+    connectDragSource: connect.dragSource(),
+    isDragging: monitor.isDragging()
+  }
+}
+
+class Keyword extends React.Component {
+
+  render() {
+    return this.props.connectDragSource(
+      <span style={keywordStyle}>
+        <span>{this.props.keyword.name}</span>
+      </span>
+    )
+  }
+}
+
+export default DragSource(DnDItemTypes.KEYWORD, sourceSpec, collect)(Keyword)
+
+Keyword.propTypes = {
+  keyword: PropTypes.object.isRequired,
+  connectDragSource: PropTypes.func.isRequired,
+  isDragging: PropTypes.bool.isRequired
+}

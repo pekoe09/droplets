@@ -1,17 +1,69 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
+import PropTypes from 'prop-types'
+import _ from 'lodash'
+import {
+  DragSource,
+  DropTarget,
+  ConnectDragSource,
+  DragSourceConnector,
+  DragSourceMonitor,
+  DragSourceCollector
+} from 'react-dnd'
+import DnDItemTypes from '../structure/dndItemTypes'
 import { Form, Input, Button, Label } from 'semantic-ui-react'
-import { saveDroplet } from '../../actions/dropletActions'
+
+import { saveDroplet, linkDroplet, addKeywordToDroplet } from '../../actions/dropletActions'
 import { addUIMessage } from '../../reducers/uiMessageReducer'
 import KeywordList from './keywordList'
+import LinkedDropletsList from './linkedDropletsList'
 import ListSubItemHeader from '../structure/listSubItemHeader'
+
+const sourceSpec = {
+  beginDrag(props) {
+    console.log('Dragging ' + props.dropletId)
+    return {
+      dropletId: props.dropletId
+    }
+  }
+}
+
+const sourceCollect = (connect, monitor) => {
+  return {
+    connectDragSource: connect.dragSource(),
+    isDragging: monitor.isDragging()
+  }
+}
+
+const targetSpec = {
+  drop(props, monitor) {
+    if (monitor.getItem().dropletId) {
+      console.log('Dropping ' + monitor.getItem().dropletId + ' on target ' + props.dropletId)
+      props.linkDroplet(monitor.getItem().dropletId, props.dropletId)
+      console.log('done')
+    }
+    else if (monitor.getItem().keyword) {
+      console.log('Adding ' + monitor.getItem().keyword + ' on target ' + props.dropletId)
+      console.log(monitor.getItem().keyword)
+      props.addKeywordToDroplet(props.dropletId, { keywordText: monitor.getItem().keyword.name })
+      console.log('added')
+    }
+  }
+}
+
+const targetCollect = (connect, monitor) => {
+  return {
+    connectDropTarget: connect.dropTarget(),
+    isOver: monitor.isOver()
+  }
+}
 
 class Droplet extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      isClosed: true,
+      isClosed: !this.props.isOpen,
       header: this.props.droplet ? this.props.droplet.header : '',
       summary: this.props.droplet ? this.props.droplet.summary : '',
       text: this.props.droplet ? this.props.droplet.text : ''
@@ -48,7 +100,9 @@ class Droplet extends React.Component {
     padding: 5,
     margin: 5,
     backgroundColor: 'white',
-    boxShadow: '1px 1px 1px #a3a3c2'
+    color: 'black',
+    boxShadow: '1px 1px 1px #a3a3c2',
+    flexGrow: 1
   }
 
   toggleBtnStyle = {
@@ -71,7 +125,7 @@ class Droplet extends React.Component {
   }
 
   render() {
-    return (
+    return this.props.connectDropTarget(this.props.connectDragSource(
       <div style={this.closedDropletStyle}>
         {
           this.state.isClosed &&
@@ -118,9 +172,14 @@ class Droplet extends React.Component {
               keywords={this.props.droplet ? this.props.droplet.keywords : []}
               dropletId={this.props.dropletId}
             />
+            <LinkedDropletsList
+              droplet={this.props.droplet}
+              projectId={this.props.projectId}
+            />
           </div>
         }
       </div>
+    )
     )
   }
 }
@@ -137,10 +196,21 @@ const mapStateToProps = (store, ownProps) => {
   }
 }
 
-export default withRouter(connect(
-  mapStateToProps,
-  {
-    saveDroplet,
-    addUIMessage
-  }
-)(Droplet))
+export default _.flow([
+  DragSource(DnDItemTypes.DROPLET, sourceSpec, sourceCollect),
+  DropTarget([DnDItemTypes.DROPLET, DnDItemTypes.KEYWORD], targetSpec, targetCollect),
+  connect(mapStateToProps,
+    {
+      saveDroplet,
+      linkDroplet,
+      addKeywordToDroplet,
+      addUIMessage
+    }
+  ),
+  withRouter
+])(Droplet)
+
+Droplet.propTypes = {
+  connectDragSource: PropTypes.func.isRequired,
+  isDragging: PropTypes.bool.isRequired
+}
