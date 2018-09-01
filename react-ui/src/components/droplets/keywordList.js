@@ -78,14 +78,13 @@ class KeywordList extends React.Component {
           style={addBtnStyle}
         >
           +
-      </Button>
+        </Button>
         {
           this.state.entryFormVisible &&
           <Form onSubmit={this.handleSubmit}>
             <Form.Group>
               <Form.Field
-                control={Input}
-                width={4}
+                control={Input}                
                 placeholder='Enter keyword'
                 name='keywordText'
                 value={this.state.keywordText}

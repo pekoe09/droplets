@@ -2,6 +2,8 @@ import React from 'react';
 import { Container } from 'semantic-ui-react'
 import { Route, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
+import { DragDropContext } from 'react-dnd'
+import HTML5Backend from 'react-dnd-html5-backend'
 
 import FrontPage from './components/structure/frontPage'
 import NavBar from './components/structure/navbar'
@@ -13,7 +15,9 @@ import UIMessages from './components/structure/uiMessages'
 class App extends React.Component {
   render() {
     return (
-      <Container>
+      <Container
+        fluid
+      >
         <NavBar />
         <UIMessages />
 
@@ -26,6 +30,6 @@ class App extends React.Component {
   }
 }
 
-export default withRouter(connect(
+export default DragDropContext(HTML5Backend)(withRouter(connect(
   null
-)(App))
+)(App)))

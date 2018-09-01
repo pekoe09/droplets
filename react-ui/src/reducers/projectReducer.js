@@ -5,6 +5,9 @@ import {
   PROJECT_CREATE_BEGIN,
   PROJECT_CREATE_SUCCESS,
   PROJECT_CREATE_FAILURE,
+  PROJECT_ADD_DROPLET_TO_DESKTOP_BEGIN,
+  PROJECT_ADD_DROPLET_TO_DESKTOP_SUCCESS,
+  PROJECT_ADD_DROPLET_TO_DESKTOP_FAILURE,
   PROJECT_DELETE_BEGIN,
   PROJECT_DELETE_SUCCESS,
   PROJECT_DELETE_FAILURE
@@ -14,8 +17,10 @@ const initialState = {
   items: [],
   loading: false,
   creating: false,
+  addingDesktopDroplet: false,
   deleting: false,
-  error: null
+  error: null,
+  addDesktopDropletError: null
 }
 
 const projectReducer = (store = initialState, action) => {
@@ -56,6 +61,28 @@ const projectReducer = (store = initialState, action) => {
         ...store,
         creating: false,
         error: action.payload.error
+      }
+    case PROJECT_ADD_DROPLET_TO_DESKTOP_BEGIN:
+      return {
+        ...store,
+        addingDesktopDroplet: true,
+        addDesktopDropletError: null
+      }
+    case PROJECT_ADD_DROPLET_TO_DESKTOP_SUCCESS:
+      return {
+        ...store,
+        addingDesktopDroplet: false,
+        addDesktopDropletError: null,
+        items: store.items.map(i => {
+          i._id.toString() === action.payload.updatedProject._id.toString() ?
+            action.payload.updatedProject : i
+        })
+      }
+    case PROJECT_ADD_DROPLET_TO_DESKTOP_FAILURE:
+      return {
+        ...store,
+        addingDesktopDroplet: false,
+        addDesktopDropletError: action.payload.error
       }
     case PROJECT_DELETE_BEGIN:
       return {

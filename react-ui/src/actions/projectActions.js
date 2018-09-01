@@ -6,6 +6,9 @@ export const PROJECTS_GETALL_FAILURE = 'PROJECTS_GETALL_FAILURE'
 export const PROJECT_CREATE_BEGIN = 'PROJECT_CREATE_BEGIN'
 export const PROJECT_CREATE_SUCCESS = 'PROJECT_CREATE_SUCCESS'
 export const PROJECT_CREATE_FAILURE = 'PROJECT_CREATE_FAILURE'
+export const PROJECT_ADD_DROPLET_TO_DESKTOP_BEGIN = 'PROJECT_ADD_DROPLET_TO_DESKTOP_BEGIN'
+export const PROJECT_ADD_DROPLET_TO_DESKTOP_SUCCESS = 'PROJECT_ADD_DROPLET_TO_DESKTOP_SUCCESS'
+export const PROJECT_ADD_DROPLET_TO_DESKTOP_FAILURE = 'PROJECT_ADD_DROPLET_TO_DESKTOP_FAILURE'
 export const PROJECT_DELETE_BEGIN = 'PROJECT_DELETE_BEGIN'
 export const PROJECT_DELETE_SUCCESS = 'PROJECT_DELETE_SUCCESS'
 export const PROJECT_DELETE_FAILURE = 'PROJECT_DELETE_FAILURE'
@@ -35,6 +38,20 @@ export const createProjectSuccess = newProject => ({
 
 export const createProjectFailure = error => ({
   type: PROJECT_CREATE_FAILURE,
+  payload: { error }
+})
+
+export const addDropletToDesktopBegin = () => ({
+  type: PROJECT_ADD_DROPLET_TO_DESKTOP_BEGIN
+})
+
+export const addDropletToDesktopSuccess = updatedProject => ({
+  type: PROJECT_ADD_DROPLET_TO_DESKTOP_SUCCESS,
+  payload: { updatedProject }
+})
+
+export const addDropletToDesktopFailure = error => ({
+  type: PROJECT_ADD_DROPLET_TO_DESKTOP_FAILURE,
   payload: { error }
 })
 
@@ -74,6 +91,19 @@ export const createProject = project => {
     } catch (error) {
       console.log(error)
       dispatch(createProjectFailure(error))
+    }
+  }
+}
+
+export const addDropletToDesktop = (desktopDroplet) => {
+  return async (dispatch) => {
+    dispatch(addDropletToDesktopBegin())
+    try {
+      const updatedProject = await projectService.addDropletToDesktop(desktopDroplet)
+      dispatch(addDropletToDesktopSuccess(updatedProject))
+    } catch (error) {
+      console.log(error)
+      dispatch(addDropletToDesktopFailure(error))
     }
   }
 }
