@@ -121,6 +121,8 @@ class LinkedDropletsList extends React.Component {
   }
 
   render() {
+    console.log('Rendering links ' + this.props.droplet.header)
+    console.log(this.props.droplet.linkedDroplets)
     return (
       <div style={linkedDropletListStyle}>
         <ListSubItemHeader text='Linked droplets' />

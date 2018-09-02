@@ -185,11 +185,13 @@ class Droplet extends React.Component {
 }
 
 const mapStateToProps = (store, ownProps) => {
+  console.log('mapState triggered')
   const dropletItem = store.droplets.items.find(i => i.projectId === ownProps.projectId)
   let droplet = null
   if (dropletItem) {
     droplet = dropletItem.droplets.find(d => d._id === ownProps.dropletId)
   }
+  console.log(droplet)
   return {
     droplet,
     error: store.droplets.error
