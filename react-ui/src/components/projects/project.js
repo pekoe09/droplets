@@ -90,7 +90,6 @@ class Project extends React.Component {
           <Sidebar
             animation='overlay'
             direction='left'
-            vertical
             visible={this.state.sidebarVisible}
             style={{width:'50%'}}
           >
@@ -101,7 +100,10 @@ class Project extends React.Component {
           </Sidebar>
           <Sidebar.Pusher style={{minHeight:'100vh'}}>
             <Segment basic>
-              <ProjectDesktop />
+              <ProjectDesktop 
+                desktopDroplets={this.props.project.desktopDroplets}
+                projectId={this.props.project._id}
+              />
             </Segment>
           </Sidebar.Pusher>
         </Sidebar.Pushable>

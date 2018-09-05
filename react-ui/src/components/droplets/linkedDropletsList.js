@@ -54,9 +54,7 @@ class LinkedDropletsList extends React.Component {
 
   handleLinkDropletConfirm = async () => {
     this.setState({ openLinkDropletModal: false })
-    console.log('Starting to link')
     this.state.linkedDropletIds.forEach(async id => {
-      console.log('linking ' + id)
       await this.props.linkDroplet(this.props.droplet._id, id)
     })
     if (this.props.linkError) {
@@ -69,7 +67,6 @@ class LinkedDropletsList extends React.Component {
   }
 
   handleSearch = async (searchText) => {
-    console.log('Processing search for ' + searchText)
     await this.props.findDroplets(searchText)
     if (this.props.findError) {
       addUIMessage('Could not retrieve droplets', 'error', 10)
@@ -79,7 +76,6 @@ class LinkedDropletsList extends React.Component {
   }
 
   handleToggleDropletLink = (linkedDropletId) => {
-    console.log('toggling linkage of ' + linkedDropletId)
     if (this.state.linkedDropletIds.includes(linkedDropletId)) {
       this.setState({ linkedDropletId: this.state.linkedDropletIds.filter(id => id !== linkedDropletId) })
     } else {
@@ -88,7 +84,6 @@ class LinkedDropletsList extends React.Component {
   }
 
   handleOpenDropletDetails = (dropletId) => {
-    console.log('Opening droplet ' + dropletId)
     this.setState({ detailedDropletId: dropletId })
     this.setState({ openDropletDetailsModal: true })
   }
@@ -121,8 +116,6 @@ class LinkedDropletsList extends React.Component {
   }
 
   render() {
-    console.log('Rendering links ' + this.props.droplet.header)
-    console.log(this.props.droplet.linkedDroplets)
     return (
       <div style={linkedDropletListStyle}>
         <ListSubItemHeader text='Linked droplets' />

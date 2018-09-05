@@ -74,6 +74,7 @@ const projectReducer = (store = initialState, action) => {
         addingDesktopDroplet: false,
         addDesktopDropletError: null,
         items: store.items.map(i => {
+          console.log('in reducer', action.payload.updatedProject)
           i._id.toString() === action.payload.updatedProject._id.toString() ?
             action.payload.updatedProject : i
         })
