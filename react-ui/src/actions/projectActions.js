@@ -100,6 +100,7 @@ export const addDropletToDesktop = (desktopDroplet) => {
     dispatch(addDropletToDesktopBegin())
     try {
       const updatedProject = await projectService.addDropletToDesktop(desktopDroplet)
+      console.log('Action received project', updatedProject)
       dispatch(addDropletToDesktopSuccess(updatedProject))
     } catch (error) {
       console.log(error)

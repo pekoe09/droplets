@@ -29,7 +29,8 @@ projectRouter.post('/', wrapAsync(async (req, res, next) => {
     name: req.body.name,
     description: req.body.description,
     team: req.body.teamId,
-    droplets: []
+    droplets: [],
+    desktopDroplets: []
   })
   project = await project.save()
   team.projects = team.projects.push(project._id)
@@ -61,6 +62,57 @@ projectRouter.put('/:id', wrapAsync(async (req, res, next) => {
 
   project.name = req.body.name
   project.description = req.body.description
+  project = await Project
+    .findByIdAndUpdate(project._id, project, { new: true })
+    .populate('team')
+  res.status(201).json(project)
+}))
+
+projectRouter.put('/:id/adddesktopdroplet', wrapAsync(async (req, res, next) => {
+  console.log('Adding droplet ' + req.body.dropletId)
+  checkUser(req)
+  const mandatories = ['dropletId']
+  validateMandatoryFields(req, mandatories, 'Project', 'add desktop Droplet')
+
+  let project = await Project.findById(req.params.id).populate('team')
+  if (!project) {
+    let err = new Error('Project cannot be found')
+    err.isBadRequest = true
+    throw err
+  }
+
+  let droplet = await Droplet.findById(req.body.dropletId)
+  if (!droplet) {
+    let err = new Error('Droplet cannot be found')
+    err.isBadRequest = true
+    throw err
+  }
+  console.log(droplet)
+
+  project.desktopDroplets = project.desktopDroplets.concat({
+    dropletId: droplet._id
+  })
+  project = await Project
+    .findByIdAndUpdate(project._id, project, { new: true })
+    .populate('team', 'desktopDroplets')
+  console.log('Updated project')
+  console.log(project)
+  res.status(201).json(project)
+}))
+
+projectRouter.put('/removedesktopdroplet', wrapAsync(async (re, res, next) => {
+  checkUser(req)
+  const mandatories = ['dropletId', 'projectId']
+  validateMandatoryFields(req, mandatories, 'Project', 'remove desktop Droplet')
+
+  let project = await Project.findById(req.body.projectId).populate('team')
+  if (!project) {
+    let err = new Error('Project cannot be found')
+    err.isBadRequest = true
+    throw err
+  }
+
+  project.desktopDroplets = project.desktopDroplets.filter(d => d._id.toString() !== req.body.dropletId)
   project = await Project
     .findByIdAndUpdate(project._id, project, { new: true })
     .populate('team')
