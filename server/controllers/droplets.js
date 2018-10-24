@@ -45,6 +45,7 @@ dropletRouter.post('/', wrapAsync(async (req, res, next) => {
   checkUser(req)
   const mandatories = ['header', 'text', 'projectId']
   validateMandatoryFields(req, mandatories, 'Droplet', 'create')
+  console.log('Posting', req.body)
 
   let project = await Project.findById(req.body.projectId)
   if (!project) {
@@ -64,19 +65,22 @@ dropletRouter.post('/', wrapAsync(async (req, res, next) => {
     teams: [project.team]
   })
   droplet = await droplet.save()
+  console.log('Saved', droplet)
 
   // links Droplet to other Droplets
   if (droplet.linkedDroplets.length > 0) {
+    console.log('Linking')
     await linkToDroplets(droplet._id, droplet.linkedDroplets)
   }
 
   // adds Droplet to Project's Droplet list
   project.droplets = project.droplets.push(droplet._id)
   await Project.findByIdAndUpdate(project._id, project)
-  droplet = droplet
+  console.log('Project', project)
+  droplet = await Droplet
     .findById(droplet._id)
     .populate('keywords linkedDroplets')
-
+  console.log('Droplet', droplet)
   res.status(201).json(droplet)
 }))
 

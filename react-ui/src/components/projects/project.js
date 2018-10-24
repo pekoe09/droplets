@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
-import { Button, Form, Header, Input, Modal, Confirm, Segment, Sidebar } from 'semantic-ui-react'
+import { Button, Form, Header, Input, Modal, Segment, Sidebar } from 'semantic-ui-react'
 import { saveDroplet, getDropletsForProject } from '../../actions/dropletActions'
 import { addUIMessage } from '../../reducers/uiMessageReducer'
 import ProjectBar from './projectBar'
@@ -100,7 +100,7 @@ class Project extends React.Component {
           </Sidebar>
           <Sidebar.Pusher style={{minHeight:'100vh'}}>
             <Segment basic>
-              <ProjectDesktop 
+              <ProjectDesktop
                 desktopDroplets={this.props.project.desktopDroplets}
                 projectId={this.props.project._id}
               />
