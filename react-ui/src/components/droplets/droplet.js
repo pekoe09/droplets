@@ -22,7 +22,6 @@ import ListSubItemHeader from '../structure/listSubItemHeader'
 
 const sourceSpec = {
   beginDrag(props) {
-    console.log('Dragging ' + props.dropletId)
     return {
       dropletId: props.dropletId
     }
@@ -39,15 +38,10 @@ const sourceCollect = (connect, monitor) => {
 const targetSpec = {
   drop(props, monitor) {
     if (monitor.getItem().dropletId) {
-      console.log('Dropping ' + monitor.getItem().dropletId + ' on target ' + props.dropletId)
       props.linkDroplet(monitor.getItem().dropletId, props.dropletId)
-      console.log('done')
     }
     else if (monitor.getItem().keyword) {
-      console.log('Adding ' + monitor.getItem().keyword + ' on target ' + props.dropletId)
-      console.log(monitor.getItem().keyword)
       props.addKeywordToDroplet(props.dropletId, { keywordText: monitor.getItem().keyword.name })
-      console.log('added')
     }
   }
 }

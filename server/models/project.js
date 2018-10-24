@@ -1,5 +1,16 @@
 const mongoose = require('mongoose')
 
+const desktopDropletSchema = new mongoose.Schema({
+  dropletId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Droplet',
+    required: true
+  },
+  posX: { type: mongoose.Schema.Types.Number },
+  posY: { type: mongoose.Schema.Types.Number },
+  posZ: { type: mongoose.Schema.Types.Number }
+})
+
 const projectSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -16,7 +27,8 @@ const projectSchema = new mongoose.Schema({
   droplets: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Droplet'
-  }]
+  }],
+  desktopDroplets: [desktopDropletSchema]
 })
 
 const Project = mongoose.model('Project', projectSchema)

@@ -45,6 +45,7 @@ dropletRouter.post('/', wrapAsync(async (req, res, next) => {
   checkUser(req)
   const mandatories = ['header', 'text', 'projectId']
   validateMandatoryFields(req, mandatories, 'Droplet', 'create')
+  console.log('Posting', req.body)
 
   let project = await Project.findById(req.body.projectId)
   if (!project) {
@@ -64,19 +65,22 @@ dropletRouter.post('/', wrapAsync(async (req, res, next) => {
     teams: [project.team]
   })
   droplet = await droplet.save()
+  console.log('Saved', droplet)
 
   // links Droplet to other Droplets
   if (droplet.linkedDroplets.length > 0) {
+    console.log('Linking')
     await linkToDroplets(droplet._id, droplet.linkedDroplets)
   }
 
   // adds Droplet to Project's Droplet list
   project.droplets = project.droplets.push(droplet._id)
   await Project.findByIdAndUpdate(project._id, project)
-  droplet = droplet
+  console.log('Project', project)
+  droplet = await Droplet
     .findById(droplet._id)
-    .populate('keywords')
-
+    .populate('keywords linkedDroplets')
+  console.log('Droplet', droplet)
   res.status(201).json(droplet)
 }))
 
@@ -115,7 +119,7 @@ dropletRouter.put('/:id', wrapAsync(async (req, res, next) => {
 
   droplet = await Droplet
     .findByIdAndUpdate(droplet._id, droplet, { new: true })
-    .populate('keywords')
+    .populate('keywords linkedDroplets')
   res.status(201).json(droplet)
 }))
 
@@ -158,7 +162,7 @@ dropletRouter.put('/addkeyword/:id', wrapAsync(async (req, res, next) => {
   droplet.keywords = droplet.keywords.concat(keyword)
   droplet = await Droplet
     .findByIdAndUpdate(droplet._id, droplet, { new: true })
-    .populate('keywords')
+    .populate('keywords linkedDroplets')
   res.status(201).json({ keyword, droplet })
 }))
 
@@ -187,7 +191,7 @@ dropletRouter.put('/addlink/:id', wrapAsync(async (req, res, next) => {
     droplet.linkedDroplets = droplet.linkedDroplets.concat(linkedDroplet._id)
     droplet = await Droplet
       .findByIdAndUpdate(droplet._id, droplet, { new: true })
-      .populate('keywords')
+      .populate('keywords linkedDroplets')
   } else {
     let err = new Error('Droplet already linked to')
     err.isBadRequest = true
@@ -200,7 +204,7 @@ dropletRouter.put('/addlink/:id', wrapAsync(async (req, res, next) => {
     linkedDroplet.linkedDroplets = linkedDroplet.linkedDroplets.concat(droplet._id)
     linkedDroplet = await Droplet
       .findByIdAndUpdate(linkedDroplet._id, linkedDroplet, { new: true })
-      .populate('keywords')
+      .populate('keywords linkedDroplets')
   } else {
     let err = new Error('Droplet already linked from')
     err.isBadRequest = true
