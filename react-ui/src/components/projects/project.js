@@ -120,7 +120,7 @@ class Project extends React.Component {
                 value={this.state.header} onChange={this.handleChange} />
               <Form.TextArea width={12} rows={3} label='Summary' name='summary'
                 value={this.state.summary} onChange={this.handleChange} />
-              <Form.TextArea width={12} rows={12} label='Text' name='text'
+              <Form.TextArea required width={12} rows={12} label='Text' name='text'
                 value={this.state.text} onChange={this.handleChange} />
             </Form>
           </Modal.Content>

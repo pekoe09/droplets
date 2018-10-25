@@ -53,6 +53,7 @@ const projectReducer = (store = initialState, action) => {
     case PROJECT_CREATE_SUCCESS:
       return {
         ...store,
+        items: store.items.concat(action.payload.newProject),
         creating: false,
         error: null
       }
