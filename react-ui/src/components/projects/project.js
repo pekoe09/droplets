@@ -23,7 +23,12 @@ class Project extends React.Component {
       openDropletCreationModal: false,
       header: '',
       summary: '',
-      text: ''
+      text: '',
+      touched: {
+        header: false,
+        summary: false,
+        text: false
+      }
     }
   }
 
@@ -70,8 +75,29 @@ class Project extends React.Component {
       openDropletCreationModal: false,
       header: '',
       summary: '',
-      text: ''
+      text: '',
+      touched: {
+        header: false,
+        summary: false,
+        text: false
+      }
     })
+  }
+
+  handleBlur = (field) => () => {
+    this.setState({
+      touched: {
+        ...this.state.touched,
+        [field]: true
+      }
+    })
+  }
+
+  validate = () => {
+    return {
+      header: !this.state.header,
+      text: !this.state.text
+    }
   }
 
   modalActionsStyle = {
@@ -79,6 +105,9 @@ class Project extends React.Component {
   }
 
   render() {
+    const errors = this.validate()
+    const isEnabled = !Object.keys(errors).some(x => errors[x])
+
     return (
       <div style={projectStyle}>
         <ProjectBar
@@ -91,14 +120,14 @@ class Project extends React.Component {
             animation='overlay'
             direction='left'
             visible={this.state.sidebarVisible}
-            style={{width:'50%'}}
+            style={{ width: '50%' }}
           >
             <ProjectDropletContainer
               project={this.props.project}
               droplets={this.props.droplets}
             />
           </Sidebar>
-          <Sidebar.Pusher style={{minHeight:'100vh'}}>
+          <Sidebar.Pusher style={{ minHeight: '100vh' }}>
             <Segment basic>
               <ProjectDesktop
                 desktopDroplets={this.props.project.desktopDroplets}
@@ -116,16 +145,41 @@ class Project extends React.Component {
           <Header content='Create a new droplet' />
           <Modal.Content>
             <Form inverted>
-              <Form.Field required control={Input} label='Header' name='header'
-                value={this.state.header} onChange={this.handleChange} />
-              <Form.TextArea width={12} rows={3} label='Summary' name='summary'
-                value={this.state.summary} onChange={this.handleChange} />
-              <Form.TextArea width={12} rows={12} label='Text' name='text'
-                value={this.state.text} onChange={this.handleChange} />
+              <Form.Field
+                required
+                control={Input}
+                label='Header'
+                name='header'
+                value={this.state.header}
+                error={errors.header && this.state.touched.header}
+                onChange={this.handleChange}
+                onBlur={this.handleBlur('header')} />
+              <Form.TextArea
+                width={12}
+                rows={3}
+                label='Summary'
+                name='summary'
+                value={this.state.summary}
+                onChange={this.handleChange}
+                onBlur={this.handleBlur('summary')} />
+              <Form.TextArea
+                required
+                width={12}
+                rows={12}
+                label='Text'
+                name='text'
+                value={this.state.text}
+                error={errors.text && this.state.touched.text}
+                onChange={this.handleChange}
+                onBlur={this.handleBlur('text')} />
             </Form>
           </Modal.Content>
           <Modal.Actions style={this.modalActionsStyle}>
-            <Button color='green' onClick={this.handleDropletCreationConfirm}>
+            <Button
+              color='green'
+              onClick={this.handleDropletCreationConfirm}
+              disabled={!isEnabled}
+            >
               Create droplet!
             </Button>
             <Button default onClick={this.handleDropletCreationCancel}>

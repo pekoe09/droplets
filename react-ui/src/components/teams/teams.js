@@ -16,7 +16,10 @@ class Teams extends React.Component {
       openTeamDeleteConfirm: false,
       name: '',
       deletionTargetId: '',
-      deletionTargetName: ''
+      deletionTargetName: '',
+      touched: {
+        name: false
+      }
     }
   }
 
@@ -46,7 +49,10 @@ class Teams extends React.Component {
   handleTeamCreationCancel = () => {
     this.setState({
       openTeamCreationModal: false,
-      name: ''
+      name: '',
+      touched: {
+        name: false
+      }
     })
   }
 
@@ -83,6 +89,21 @@ class Teams extends React.Component {
     })
   }
 
+  handleBlur = (field) => () => {
+    this.setState({
+      touched: {
+        ...this.state.touched,
+        [field]: true
+      }
+    })
+  }
+
+  validate = () => {
+    return {
+      name: !this.state.name
+    }
+  }
+
   teamListItems = () => {
     return this.props.teams.map(t =>
       <TeamListItem
@@ -97,6 +118,9 @@ class Teams extends React.Component {
   }
 
   render() {
+    const errors = this.validate()
+    const isEnabled = !Object.keys(errors).some(x => errors[x])
+
     return (
       <div>
         <ViewHeader text='Your teams and projects' />
@@ -110,12 +134,24 @@ class Teams extends React.Component {
           <Header content='Create a new team' />
           <Modal.Content>
             <Form inverted>
-              <Form.Field required control={Input} width={6} label='Name' name='name'
-                value={this.state.name} onChange={this.handleChange} />
+              <Form.Field
+                required
+                control={Input}
+                width={6}
+                label='Name'
+                name='name'
+                value={this.state.name}
+                error={errors.name && this.state.touched.name}
+                onChange={this.handleChange}
+                onBlur={this.handleBlur('name')} />
             </Form>
           </Modal.Content>
           <Modal.Actions style={this.modalActionsStyle}>
-            <Button color='green' onClick={this.handleTeamCreationConfirm}>
+            <Button
+              color='green'
+              onClick={this.handleTeamCreationConfirm}
+              disabled={!isEnabled}
+            >
               Create team!
             </Button>
             <Button default onClick={this.handleTeamCreationCancel}>
