@@ -15,7 +15,11 @@ class TeamProjectList extends React.Component {
       name: '',
       description: '',
       deletionTargetId: '',
-      deletionTargetName: ''
+      deletionTargetName: '',
+      touched: {
+        name: false,
+        description: false,
+      }
     }
   }
 
@@ -43,7 +47,11 @@ class TeamProjectList extends React.Component {
     this.setState({
       openProjectCreationModal: false,
       name: '',
-      description: ''
+      description: '',
+      touched: {
+        name: false,
+        description: false
+      }
     })
   }
 
@@ -84,6 +92,21 @@ class TeamProjectList extends React.Component {
     })
   }
 
+  handleBlur = (field) => () => {
+    this.setState({
+      touched: {
+        ...this.state.touched,
+        [field]: true
+      }
+    })
+  }
+
+  validate = () => {
+    return {
+      name: !this.state.name
+    }
+  }
+
   projectListItems = () => {
     return this.props.projects.map(p =>
       <TeamProjectListItem
@@ -105,6 +128,9 @@ class TeamProjectList extends React.Component {
   }
 
   render() {
+    const errors = this.validate()
+    const isEnabled = !Object.keys(errors).some(x => errors[x])
+
     return (
       <div>
         <div style={{ overflowX: 'hidden' }}>
@@ -116,7 +142,7 @@ class TeamProjectList extends React.Component {
             onClick={this.handleOpenProjectCreation}
           >
             Add a new project
-        </Button>
+          </Button>
         </div>
 
         <Modal
@@ -127,16 +153,35 @@ class TeamProjectList extends React.Component {
           <Header content='Create a new project' />
           <Modal.Content>
             <Form inverted>
-              <Form.Field required control={Input} width={6} label='Name' name='name'
-                value={this.state.name} onChange={this.handleChange} />
+              <Form.Field
+                required
+                control={Input}
+                width={6}
+                label='Name'
+                name='name'
+                value={this.state.name}
+                error={errors.name && this.state.touched.name}
+                onChange={this.handleChange}
+                onBlur={this.handleBlur('name')}
+              />
               <Form.Field>
                 <Label style={this.modalLabelStyle}>Description</Label>
-                <textarea value={this.state.description} onChange={this.handleDescriptionChange} name='description' rows={5} />
+                <textarea
+                  rows={5}
+                  name='description'
+                  value={this.state.description}
+                  onChange={this.handleDescriptionChange}
+                  onBlur={this.handleBlur('description')}
+                />
               </Form.Field>
             </Form>
           </Modal.Content>
           <Modal.Actions style={this.modalActionsStyle}>
-            <Button color='green' onClick={this.handleProjectCreationConfirm}>
+            <Button
+              color='green'
+              onClick={this.handleProjectCreationConfirm}
+              disabled={!isEnabled}
+            >
               Create project!
             </Button>
             <Button default onClick={this.handleProjectCreationCancel}>
@@ -154,7 +199,7 @@ class TeamProjectList extends React.Component {
           onCancel={this.handleDeleteCancel}
         />
 
-        {this.props.projects.length == 0 && <p>This team does not have any projects yet!</p>}
+        {this.props.projects.length === 0 && <p>This team does not have any projects yet!</p>}
         {this.props.projects.length > 0 && this.projectListItems()}
       </div>
     )
