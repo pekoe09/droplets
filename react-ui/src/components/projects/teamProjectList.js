@@ -134,7 +134,7 @@ class TeamProjectList extends React.Component {
     return (
       <div>
         <div style={{ overflowX: 'hidden' }}>
-          <span style={{ fontSize: '1.1em', fontWeight: 700 }}>Projects</span>
+          
           <Button
             size='mini'
             style={{ float: 'right', marginTop: 5 }}

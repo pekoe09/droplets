@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter, NavLink } from 'react-router-dom'
-import { Button, Dropdown, Menu } from 'semantic-ui-react'
+import { Menu } from 'semantic-ui-react'
 import Login from '../users/login'
 import Logout from '../users/logout'
 
@@ -47,7 +47,7 @@ const NavBar = ({ currentUser }) => {
   return (
     <Menu style={menuStyle}>
       <Menu.Header style={menuLogoStyle}>
-        <NavLink to='/'><img src='/img/eqma-logo-80_85.png' /></NavLink>
+        <NavLink to='/'><img src='/favicon.ico' /></NavLink>
       </Menu.Header>
 
       {currentUser && <LoggedInActions />}

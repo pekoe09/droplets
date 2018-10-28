@@ -5,7 +5,7 @@ import Droplet from '../droplets/droplet'
 import DropletFilterMenu from '../droplets/dropletFilterMenu'
 
 const projectDropletContainerStyle = {
-  backgroundColor: '#ffe6ff',
+  backgroundColor: '#045f84',
   //display: 'flex',
   //flex: 1,
   //flexDirection: 'column',
@@ -40,5 +40,4 @@ const mapStateToProps = store => ({
 
 export default withRouter(connect(
   mapStateToProps
-)
-  (ProjectDropletContainer))
+)(ProjectDropletContainer))

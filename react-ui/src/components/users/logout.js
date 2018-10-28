@@ -5,7 +5,10 @@ import { Button } from 'semantic-ui-react'
 import { logout } from '../../actions/userActions'
 
 const logoutButtonStyle = {
-  fontSize: '0.9rem'
+  fontSize: '0.9rem',
+  alignSelf: 'flex-end',
+  marginRight: 15,
+  marginBottom: 5
 }
 
 const Logout = ({ logout, history }) => {

@@ -122,7 +122,7 @@ class Teams extends React.Component {
     const isEnabled = !Object.keys(errors).some(x => errors[x])
 
     return (
-      <div>
+      <div style={{ padding: 10 }}>
         <ViewHeader text='Your teams and projects' />
         <Button primary onClick={this.handleOpenTeamCreation}>Add a new team</Button>
 

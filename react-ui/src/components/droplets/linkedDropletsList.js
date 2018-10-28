@@ -19,7 +19,7 @@ const addBtnStyle = {
   paddingLeft: 8,
   paddingRight: 8,
   color: 'white',
-  background: 'purple'
+  background: '#045f84'
 }
 
 const linkedDropletListStyle = {
