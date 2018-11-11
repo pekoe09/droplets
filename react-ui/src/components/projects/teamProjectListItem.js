@@ -6,8 +6,8 @@ import ListSubItemHeader from '../structure/listSubItemHeader'
 
 const projectListItemStyle = {
   marginTop: 5,
-  backgroundColor: '#f8edf8',
-  color: 'purple',
+  backgroundColor: '#E3F6FF',
+  color: '"045f84"',
   borderRadius: 4,
   padding: 5
 }
@@ -15,6 +15,14 @@ const projectListItemStyle = {
 const rightBtnStyle = {
   marginLeft: 5,
   float: 'right'
+}
+
+const deleteBtnStyle = {
+  borderStyle: 'solid',
+  borderColor: '#ff1f49',
+  borderWidth: 1,
+  backgroundColor: 'white',
+  color: '#ff1f49'
 }
 
 const ProjectListItem = (props) => {
@@ -38,9 +46,8 @@ const ProjectListItem = (props) => {
         />
         <Button
           size='mini'
-          color='red'
           onClick={props.handleDelete}
-          style={rightBtnStyle}
+          style={{ ...rightBtnStyle, ...deleteBtnStyle }}
         >
           Delete
         </Button>

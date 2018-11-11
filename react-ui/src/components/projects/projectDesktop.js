@@ -39,12 +39,17 @@ const ProjectDesktop = ({ desktopDroplets, projectId, connectDropTarget, isOver 
       <Droplet
         dropletId={d.dropletId}
         projectId={projectId}
+        key={d.dropletId}
       />
     )
   }
 
   return connectDropTarget(
-    <div style={{ backgroundColor: 'lightgrey', minHeight: '100vh' }}>
+    <div style={{
+      backgroundColor: 'lightgrey',
+      minHeight: '100vh',
+      padding: 10
+    }}>
       {mapDroplets()}
     </div>
   )

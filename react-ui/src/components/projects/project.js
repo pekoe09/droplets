@@ -19,7 +19,7 @@ class Project extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      sidebarVisible: false,
+      isSidebarVisible: false,
       openDropletCreationModal: false,
       header: '',
       summary: '',
@@ -37,7 +37,7 @@ class Project extends React.Component {
   }
 
   handleToggleSidebar = () => {
-    this.setState({ sidebarVisible: !this.state.sidebarVisible })
+    this.setState({ isSidebarVisible: !this.state.isSidebarVisible })
   }
 
   handleCreateDroplet = () => {
@@ -112,6 +112,7 @@ class Project extends React.Component {
       <div style={projectStyle}>
         <ProjectBar
           project={this.props.project}
+          isSideBarVisible={this.state.isSidebarVisible}
           handleCreateDroplet={this.handleCreateDroplet}
           handleToggleSidebar={this.handleToggleSidebar}
         />
@@ -119,7 +120,7 @@ class Project extends React.Component {
           <Sidebar
             animation='overlay'
             direction='left'
-            visible={this.state.sidebarVisible}
+            visible={this.state.isSidebarVisible}
             style={{ width: '50%' }}
           >
             <ProjectDropletContainer

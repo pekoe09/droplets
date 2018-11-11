@@ -26,7 +26,7 @@ const addBtnStyle = {
   fontSize: '1.3em',
   width: 27,
   color: 'white',
-  background: 'purple'
+  background: '#045f84'
 }
 
 class KeywordList extends React.Component {
@@ -84,7 +84,7 @@ class KeywordList extends React.Component {
           <Form onSubmit={this.handleSubmit}>
             <Form.Group>
               <Form.Field
-                control={Input}                
+                control={Input}
                 placeholder='Enter keyword'
                 name='keywordText'
                 value={this.state.keywordText}
