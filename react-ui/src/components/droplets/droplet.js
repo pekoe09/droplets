@@ -115,7 +115,7 @@ class Droplet extends React.Component {
 
   saveBtnStyle = {
     color: 'white',
-    background: 'purple'
+    background: '#045f84'
   }
 
   render() {
@@ -123,7 +123,7 @@ class Droplet extends React.Component {
       <div style={this.closedDropletStyle}>
         {
           this.state.isClosed &&
-          <div>
+          <div style={{ padding: 5 }}>
             <ListSubItemHeader text={this.state.header} />
             <Button
               size='mini'
@@ -144,7 +144,7 @@ class Droplet extends React.Component {
                 style={this.toggleBtnStyle}
               >
                 -
-            </Button>
+              </Button>
             </div>
             <div>
               <Form onSubmit={this.handleSubmit}>

@@ -6,27 +6,38 @@ const projectBarStyle = {
   backgroundColor: 'white',
   height: 50,
   display: 'inline-block',
-  paddingTop: 7,
-  paddingLeft: 5
+  padding: 10
 }
 
 const createDropletBtnStyle = {
   float: 'right',
   color: 'white',
-  background: 'purple',
+  background: '#0492cc',
   marginRight: 5
 }
 
-const ProjectBar = ({ project, handleCreateDroplet, handleToggleSidebar }) => {
+const ProjectBar = ({ project, isSideBarVisible, handleCreateDroplet, handleToggleSidebar }) => {
   return (
     <div style={projectBarStyle}>
       <ListItemHeader text={project.name} />
-      <Button
-        onClick={handleToggleSidebar}
-        style={createDropletBtnStyle}
-      >
-        Show droplet bar
-      </Button>
+      {
+        isSideBarVisible &&
+        <Button
+          onClick={handleToggleSidebar}
+          style={createDropletBtnStyle}
+        >
+          Hide droplet bar
+        </Button>
+      }
+      {
+        !isSideBarVisible &&
+        <Button
+          onClick={handleToggleSidebar}
+          style={createDropletBtnStyle}
+        >
+          Show droplet bar
+        </Button>
+      }
       <Button
         onClick={handleCreateDroplet}
         style={createDropletBtnStyle}

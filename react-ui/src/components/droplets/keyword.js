@@ -10,7 +10,7 @@ import {
 import DnDItemTypes from '../structure/dndItemTypes';
 
 const keywordStyle = {
-  backgroundColor: 'purple',
+  backgroundColor: '#045f84',
   color: 'white',
   paddingTop: 2,
   paddingBottom: 2,
