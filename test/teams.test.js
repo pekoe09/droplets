@@ -1,17 +1,18 @@
 const supertest = require('supertest')
-const { app, server } = require('../index')
+const expect = require('chai').expect
+const { app, server } = require('../server/index')
 const api = supertest(app)
 const { initialTeams, resetTeams, teamsInDb, nonExistingID } = require('./teams.testHelper')
 const { resetUsers, usersInDb, getToken, getBogusToken, getOldUsersToken } = require('./users.testHelper')
-const Team = require('../models/team')
-const Project = require('../models/project')
+const Team = require('../server/models/team')
+const Project = require('../server/models/project')
 
 describe('GET /api/teams', () => {
 
   let tokenUser = null
   let token = null
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     await resetUsers()
     const users = await usersInDb()
     tokenUser = users[1]
@@ -67,9 +68,9 @@ describe('GET /api/teams', () => {
 
     const teams = response.body
     const teamIds = teams.map(t => t._id)
-    expect(teams).toHaveLength(myTeamIds.length)
-    teamIds.forEach(id => expect(myTeamIds).toContain(id))
-    myTeamIds.forEach(id => expect(teamIds).toContain(id))
+    expect(teams.length).to.equal(myTeamIds.length)
+    teamIds.forEach(id => expect(myTeamIds).to.include(id))
+    myTeamIds.forEach(id => expect(teamIds).to.include(id))
   })
 })
 
@@ -78,7 +79,7 @@ describe('POST /api/teams', () => {
   let tokenUser = null
   let token = null
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     await resetUsers()
     const users = await usersInDb()
     tokenUser = users[1]
@@ -107,13 +108,13 @@ describe('POST /api/teams', () => {
     const newTeamInDb = teamsAfter.find(t => t.name === team.name)
     const teamMembers = newTeam.members.map(m => m.username)
     const teamMembersInDb = newTeamInDb.members.map(m => m.username)
-    expect(teamsAfter.length).toBe(teamsBefore.length + 1)
-    expect(newTeam.name).toEqual(team.name)
-    expect(newTeam.owner.username).toEqual(tokenUser.username)
-    expect(newTeamInDb.name).toEqual(team.name)
-    expect(newTeamInDb.owner.username).toEqual(tokenUser.username)
-    expect(teamMembers).toContain(tokenUser.username)
-    expect(teamMembersInDb).toContain(tokenUser.username)
+    expect(teamsAfter.length).to.equal(teamsBefore.length + 1)
+    expect(newTeam.name).to.equal(team.name)
+    expect(newTeam.owner.username).to.equal(tokenUser.username)
+    expect(newTeamInDb.name).to.equal(team.name)
+    expect(newTeamInDb.owner.username).to.equal(tokenUser.username)
+    expect(teamMembers).to.include(tokenUser.username)
+    expect(teamMembersInDb).to.include(tokenUser.username)
   })
 
   it('adds the team to creators teams', async () => {
@@ -129,7 +130,7 @@ describe('POST /api/teams', () => {
     const usersAfter = await usersInDb()
     const owner = usersAfter.find(u => u.username === tokenUser.username)
     const matchedTeams = owner.teams.find(t => t.name === team.name)
-    expect(matchedTeams.name).toEqual(team.name)
+    expect(matchedTeams.name).to.equal(team.name)
   })
 
   it('returns error without token', async () => {
@@ -144,7 +145,7 @@ describe('POST /api/teams', () => {
       .expect(401)
 
     const teamsAfter = await teamsInDb()
-    expect(teamsAfter.length).toBe(teamsBefore.length)
+    expect(teamsAfter.length).to.equal(teamsBefore.length)
   })
 
   it('returns error with bogus token', async () => {
@@ -161,7 +162,7 @@ describe('POST /api/teams', () => {
       .expect(401)
 
     const teamsAfter = await teamsInDb()
-    expect(teamsAfter.length).toBe(teamsBefore.length)
+    expect(teamsAfter.length).to.equal(teamsBefore.length)
   })
 
   it('returns error with old users token', async () => {
@@ -178,7 +179,7 @@ describe('POST /api/teams', () => {
       .expect(401)
 
     const teamsAfter = await teamsInDb()
-    expect(teamsAfter.length).toBe(teamsBefore.length)
+    expect(teamsAfter.length).to.equal(teamsBefore.length)
   })
 
   it('does not accept team without a name', async () => {
@@ -192,7 +193,7 @@ describe('POST /api/teams', () => {
       .expect(400)
 
     const teamsAfter = await teamsInDb()
-    expect(teamsAfter.length).toBe(teamsBefore.length)
+    expect(teamsAfter.length).to.equal(teamsBefore.length)
   })
 
   it('does not accept team with empty string as a name', async () => {
@@ -208,7 +209,7 @@ describe('POST /api/teams', () => {
       .expect(400)
 
     const teamsAfter = await teamsInDb()
-    expect(teamsAfter.length).toBe(teamsBefore.length)
+    expect(teamsAfter.length).to.equal(teamsBefore.length)
   })
 })
 
@@ -216,7 +217,7 @@ describe('PUT /api/teams/:id', async () => {
   let tokenUser = null
   let token = null
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     await resetUsers()
     const users = await usersInDb()
     tokenUser = users[1]
@@ -264,10 +265,10 @@ describe('PUT /api/teams/:id', async () => {
 
     const teamsAfter = await teamsInDb()
     const teamInDb = teamsAfter.find(t => t._id.toString() === originalTeam._id.toString())
-    expect(teamsAfter.length).toBe(teamsBefore.length)
-    expect(teamInDb.name).toEqual(originalTeam.name)
-    expect(teamInDb.owner.username).toEqual(originalTeam.owner.username)
-    expect(teamInDb.members.length).toBe(originalTeam.members.length)
+    expect(teamsAfter.length).to.equal(teamsBefore.length)
+    expect(teamInDb.name).to.equal(originalTeam.name)
+    expect(teamInDb.owner.username).to.equal(originalTeam.owner.username)
+    expect(teamInDb.members.length).to.equal(originalTeam.members.length)
   })
 
   it('returns error with bogus token', async () => {
@@ -303,6 +304,6 @@ describe('PUT /api/teams/:id', async () => {
   })
 })
 
-afterAll(async () => {
+after(async () => {
   await server.close()
 })

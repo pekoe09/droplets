@@ -1,7 +1,7 @@
 const supertest = require('supertest')
-const { app, server } = require('../index')
+const { app, server } = require('../server/index')
 const api = supertest(app)
-const User = require('../models/user')
+const User = require('../server/models/user')
 
 const initialUsers = [
   {
@@ -62,7 +62,7 @@ const nonExistingID = async () => {
 }
 
 const resetUsers = async () => {
-  await User.remove({})
+  await User.deleteMany({})
   const userObjects = initialUsers.map(u => new User(u))
   const promiseArray = userObjects.map(o => o.save())
   await Promise.all(promiseArray)
