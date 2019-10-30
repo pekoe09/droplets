@@ -229,24 +229,24 @@ describe('PUT /api/teams/:id', async () => {
   })
 
   it('updates existing team', async () => {
-    // const users = await usersInDb()
-    // const teamsBefore = await teamsInDb()
-    // const targetTeam = {
-    //   name: 'updatedname',
-    //   ownerId: users[2]._id
-    // }
+    const users = await usersInDb()
+    const teamsBefore = await teamsInDb()
+    const targetTeam = {
+      name: 'updatedname',
+      ownerId: users[1]._id
+    }
 
-    // const response = await api
-    //   .put(`/api/teams/${teamsBefore[1]._id}`)
-    //   .set('Authorization', 'Bearer ' + token)
-    //   .send(targetTeam)
-    //   .expect(201)
+    const response = await api
+      .put(`/api/teams/${teamsBefore[1]._id}`)
+      .set('Authorization', 'Bearer ' + token)
+      .send(targetTeam)
+      .expect(201)
 
-    // const updatedTeam = response.body
-    // const teamsAfter = await teamsInDb()
-    // expect(teamsAfter.length).toBe(teamsBefore.length)
-    // expect(updatedTeam.name).toEqual(targetTeam.name)
-    // expect(updatedTeam.owner.username).toEqual(users[2].username)
+    const updatedTeam = response.body
+    const teamsAfter = await teamsInDb()
+    expect(teamsAfter.length).to.equal(teamsBefore.length)
+    expect(updatedTeam.name).to.equal(targetTeam.name)
+    expect(updatedTeam.owner.username).to.equal(users[1].username)
   })
 
   it('returns error without token', async () => {
@@ -255,7 +255,7 @@ describe('PUT /api/teams/:id', async () => {
     const originalTeam = teamsBefore[1]
     const targetTeam = {
       name: 'updatedname',
-      ownerId: users[2]._id
+      ownerId: users[1]._id
     }
 
     const response = await api
@@ -272,19 +272,113 @@ describe('PUT /api/teams/:id', async () => {
   })
 
   it('returns error with bogus token', async () => {
+    const teamsBefore = await teamsInDb()
+    const users = await usersInDb()
+    const originalTeam = teamsBefore[1]
+    const targetTeam = {
+      name: 'updatedname',
+      ownerId: users[1]._id
+    }
+    const bogusToken = getBogusToken()
 
+    const response = await api
+      .put(`/api/teams/${originalTeam._id}`)
+      .set('Authorization', 'Bearer ' + bogusToken)
+      .send(targetTeam)
+      .expect(401)
+
+    const teamsAfter = await teamsInDb()
+    const teamInDb = teamsAfter.find(t => t._id.toString() === originalTeam._id.toString())
+    expect(teamsAfter.length).to.equal(teamsBefore.length)
+    expect(teamInDb.name).to.equal(originalTeam.name)
+    expect(teamInDb.owner.username).to.equal(originalTeam.owner.username)
+    expect(teamInDb.members.length).to.equal(originalTeam.members.length)
   })
 
   it('returns error with old users token', async () => {
+    const teamsBefore = await teamsInDb()
+    const users = await usersInDb()
+    const originalTeam = teamsBefore[1]
+    const targetTeam = {
+      name: 'updatedname',
+      ownerId: users[1]._id
+    }
+    const oldUsersToken = getOldUsersToken()
 
+    const response = await api
+      .put(`/api/teams/${originalTeam._id}`)
+      .set('Authorization', 'Bearer ' + oldUsersToken)
+      .send(targetTeam)
+      .expect(401)
+
+    const teamsAfter = await teamsInDb()
+    const teamInDb = teamsAfter.find(t => t._id.toString() === originalTeam._id.toString())
+    expect(teamsAfter.length).to.equal(teamsBefore.length)
+    expect(teamInDb.name).to.equal(originalTeam.name)
+    expect(teamInDb.owner.username).to.equal(originalTeam.owner.username)
+    expect(teamInDb.members.length).to.equal(originalTeam.members.length)
   })
 
   it('returns error if calling user is not the owner', async () => {
+    const teamsBefore = await teamsInDb()
+    const users = await usersInDb()
+    const originalTeam = new Team(
+      {
+        name: 'otherOwner',
+        owner: users[2]._id,
+        members: [users[2]._id]
+      }
+    )
+    const savedTeam = await originalTeam.save()
+    const targetTeam = {
+      name: 'updatedname',
+      ownerId: users[2]._id
+    }
 
+    const response = await api
+      .put(`/api/teams/${savedTeam._id}`)
+      .set('Authorization', 'Bearer ' + token)
+      .send(targetTeam)
+      .expect(401)
+
+    const teamsAfter = await teamsInDb()
+    const teamInDb = teamsAfter.find(t => t._id.toString() === savedTeam._id.toString())
+    expect(teamsAfter.length).to.equal(teamsBefore.length + 1)
+    expect(teamInDb.name).to.equal(originalTeam.name)
+    expect(teamInDb.owner._id.toString()).to.equal(originalTeam.owner.toString())
+    expect(teamInDb.members.length).to.equal(originalTeam.members.length)
+    await Team.findByIdAndDelete(savedTeam._id)
   })
 
   it('returns error if reported owner is not a member', async () => {
+    const teamsBefore = await teamsInDb()
+    const users = await usersInDb()
+    const originalTeam = new Team(
+      {
+        name: 'otherMember',
+        owner: users[1]._id,
+        members: [users[2]._id]
+      }
+    )
+    const savedTeam = await originalTeam.save()
+    const targetTeam = {
+      name: 'updatedname',
+      ownerId: users[1]._id
+    }
 
+    const response = await api
+      .put(`/api/teams/${savedTeam._id}`)
+      .set('Authorization', 'Bearer ' + token)
+      .send(targetTeam)
+      .expect(400)
+
+    const teamsAfter = await teamsInDb()
+    const teamInDb = teamsAfter.find(t => t._id.toString() === originalTeam._id.toString())
+    expect(teamsAfter.length).to.equal(teamsBefore.length + 1)
+    expect(teamInDb.name).to.equal(originalTeam.name)
+    expect(teamInDb.owner._id.toString()).to.equal(originalTeam.owner.toString())
+    expect(teamInDb.members.length).to.equal(originalTeam.members.length)
+    await Team.findByIdAndDelete(savedTeam._id)
   })
 
   it('does not accept team without a name', async () => {

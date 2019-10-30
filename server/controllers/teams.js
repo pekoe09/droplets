@@ -30,7 +30,7 @@ teamRouter.post('/', wrapAsync(async (req, res, next) => {
   let user = await User.findById(req.user._id)
   user.teams.push(team._id)
   await User.findByIdAndUpdate(user._id, user)
-  
+
   team = await Team
     .findById(team._id)
     .populate('owner members projects')
@@ -40,14 +40,15 @@ teamRouter.post('/', wrapAsync(async (req, res, next) => {
 
 teamRouter.put('/:id', wrapAsync(async (req, res, next) => {
   checkUser(req)
-  validateMandatoryField(req, 'name ownerId')
+  console.log(req.body)
+  validateMandatoryField(req, 'name', 'ownerId', 'Team', 'update')
   let team = await Team.findById(req.params.id)
-  if (team.owner.toString() !== req.user._id) {
+  if (team.owner.toString() !== req.user._id.toString()) {
     let err = new Error('User is not the owner of the team')
     err.isUnauthorizedAttempt = true
     throw err
   }
-  if (!team.members.includes(req.body.owner)) {
+  if (!team.members.includes(req.body.ownerId)) {
     let err = new Error('Owner must be a member of the team')
     err.isBadRequest = true
     throw err
@@ -56,7 +57,7 @@ teamRouter.put('/:id', wrapAsync(async (req, res, next) => {
   team.name = req.body.name
   team.owner = req.body.ownerId
   team = await Team
-    .findByIdAndUpdate(team._id, team)
+    .findByIdAndUpdate(team._id, team, { new: true })
     .populate('owner members projects')
   res.status(201).json(team)
 }))
