@@ -2,8 +2,8 @@ const supertest = require('supertest')
 const expect = require('chai').expect
 const { app, server } = require('../server/index')
 const api = supertest(app)
-const { initialTeams, resetTeams, teamsInDb, nonExistingID } = require('./teams.testHelper')
-const { resetUsers, usersInDb, getToken, getBogusToken, getOldUsersToken } = require('./users.testHelper')
+const { initialTeams, resetTeams, teamsInDb } = require('./teams.testHelper')
+const { resetUsers, usersInDb, getToken, getBogusToken, getOldUsersToken, nonExistingID } = require('./users.testHelper')
 const Team = require('../server/models/team')
 const Project = require('../server/models/project')
 
@@ -382,20 +382,126 @@ describe('PUT /api/teams/:id', async () => {
   })
 
   it('does not accept team without a name', async () => {
+    const users = await usersInDb()
+    const teamsBefore = await teamsInDb()
+    const originalTeam = teamsBefore[1]
+    const targetTeam = {
+      ownerId: users[1]._id
+    }
 
+    const response = await api
+      .put(`/api/teams/${teamsBefore[1]._id}`)
+      .set('Authorization', 'Bearer ' + token)
+      .send(targetTeam)
+      .expect(400)
+
+      const teamsAfter = await teamsInDb()
+      const teamInDb = teamsAfter.find(t => t._id.toString() === originalTeam._id.toString())
+      expect(teamsAfter.length).to.equal(teamsBefore.length)
+      expect(teamInDb.name).to.equal(originalTeam.name)
+      expect(teamInDb.owner._id.toString()).to.equal(originalTeam.owner._id.toString())
+      expect(teamInDb.members.length).to.equal(originalTeam.members.length)
   })
 
   it('does not accept team with an empty string as a name', async () => {
+    const users = await usersInDb()
+    const teamsBefore = await teamsInDb()
+    const originalTeam = teamsBefore[1]
+    const targetTeam = {
+      name: '',
+      ownerId: users[1]._id
+    }
 
+    const response = await api
+      .put(`/api/teams/${teamsBefore[1]._id}`)
+      .set('Authorization', 'Bearer ' + token)
+      .send(targetTeam)
+      .expect(400)
+
+      const teamsAfter = await teamsInDb()
+      const teamInDb = teamsAfter.find(t => t._id.toString() === originalTeam._id.toString())
+      expect(teamsAfter.length).to.equal(teamsBefore.length)
+      expect(teamInDb.name).to.equal(originalTeam.name)
+      expect(teamInDb.owner._id.toString()).to.equal(originalTeam.owner._id.toString())
+      expect(teamInDb.members.length).to.equal(originalTeam.members.length)
   })
 
   it('does not accept team without an owner', async () => {
+    const users = await usersInDb()
+    const teamsBefore = await teamsInDb()
+    const originalTeam = teamsBefore[1]
+    const targetTeam = {
+      name: 'othername',
+      ownerId: ''
+    }
 
+    const response = await api
+      .put(`/api/teams/${teamsBefore[1]._id}`)
+      .set('Authorization', 'Bearer ' + token)
+      .send(targetTeam)
+      .expect(400)
+
+      const teamsAfter = await teamsInDb()
+      const teamInDb = teamsAfter.find(t => t._id.toString() === originalTeam._id.toString())
+      expect(teamsAfter.length).to.equal(teamsBefore.length)
+      expect(teamInDb.name).to.equal(originalTeam.name)
+      expect(teamInDb.owner._id.toString()).to.equal(originalTeam.owner._id.toString())
+      expect(teamInDb.members.length).to.equal(originalTeam.members.length)
+  })
+
+  it('accepts a change of owner', async () => {
+    const users = await usersInDb()
+    const teamsBefore = await teamsInDb()
+    const originalTeam = new Team(
+      {
+        name: 'otherMember',
+        owner: users[1]._id,
+        members: [users[1]._id, users[2]._id]
+      }
+    )
+    const savedTeam = await originalTeam.save()
+    const targetTeam = {
+      name: 'updatedname',
+      ownerId: users[2]._id,
+    }
+
+    const response = await api
+      .put(`/api/teams/${savedTeam._id}`)
+      .set('Authorization', 'Bearer ' + token)
+      .send(targetTeam)
+      .expect(201)
+
+    const updatedTeam = response.body
+    const teamsAfter = await teamsInDb()
+    expect(teamsAfter.length).to.equal(teamsBefore.length + 1)
+    expect(updatedTeam.name).to.equal(targetTeam.name)
+    expect(updatedTeam.owner._id.toString()).to.equal(users[2]._id.toString())
+    await Team.findByIdAndDelete(savedTeam._id)
   })
 
   it('does not accept team with a non-existing owner', async () => {
+    const nonExistingUserID = await nonExistingID()
+    const teamsBefore = await teamsInDb()
+    const originalTeam = teamsBefore[1]
+    const targetTeam = {
+      name: 'othername',
+      ownerId: nonExistingUserID,
+      members: [nonExistingUserID]
+    }
 
-  })
+    const response = await api
+      .put(`/api/teams/${teamsBefore[1]._id}`)
+      .set('Authorization', 'Bearer ' + token)
+      .send(targetTeam)
+      .expect(400)
+
+      const teamsAfter = await teamsInDb()
+      const teamInDb = teamsAfter.find(t => t._id.toString() === originalTeam._id.toString())
+      expect(teamsAfter.length).to.equal(teamsBefore.length)
+      expect(teamInDb.name).to.equal(originalTeam.name)
+      expect(teamInDb.owner._id.toString()).to.equal(originalTeam.owner._id.toString())
+      expect(teamInDb.members.length).to.equal(originalTeam.members.length)
+  })  
 })
 
 after(async () => {

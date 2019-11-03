@@ -18,7 +18,7 @@ teamRouter.get('/', wrapAsync(async (req, res, next) => {
 
 teamRouter.post('/', wrapAsync(async (req, res, next) => {
   checkUser(req)
-  validateMandatoryField(req, 'name')
+  validateMandatoryField(req, 'name', 'Team', 'create')
 
   let team = new Team({
     name: req.body.name,
@@ -40,7 +40,6 @@ teamRouter.post('/', wrapAsync(async (req, res, next) => {
 
 teamRouter.put('/:id', wrapAsync(async (req, res, next) => {
   checkUser(req)
-  console.log(req.body)
   validateMandatoryField(req, 'name', 'ownerId', 'Team', 'update')
   let team = await Team.findById(req.params.id)
   if (team.owner.toString() !== req.user._id.toString()) {
