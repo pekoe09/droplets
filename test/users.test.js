@@ -1,15 +1,16 @@
 const supertest = require('supertest')
-const { app, server } = require('../index')
+const expect = require('chai').expect
+const { app, server } = require('../server/index')
 const api = supertest(app)
 const { initialUsers, resetUsers, usersInDb, getToken, getBogusToken, getOldUsersToken } = require('./users.testHelper')
-const User = require('../models/user')
+const User = require('../server/models/user')
 
 describe('GET /api/users/self', () => {
 
   let tokenUser = initialUsers[1]
   let token = null
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     await resetUsers()
     token = await getToken(tokenUser.username)
   })
@@ -59,11 +60,11 @@ describe('GET /api/users/self', () => {
       .set('Authorization', 'Bearer ' + token)
 
     const user = response.body
-    expect(user._id.toString()).toEqual(targetUser._id.toString())
-    expect(user.username).toEqual(targetUser.username)
-    expect(user.lastName).toEqual(targetUser.lastName)
-    expect(user.firstNames).toEqual(targetUser.firstNames)
-    expect(user.email).toEqual(targetUser.email)
+    expect(user._id.toString()).to.equal(targetUser._id.toString())
+    expect(user.username).to.equal(targetUser.username)
+    expect(user.lastName).to.equal(targetUser.lastName)
+    expect(user.firstNames).to.equal(targetUser.firstNames)
+    expect(user.email).to.equal(targetUser.email)
   })
 })
 
@@ -93,11 +94,11 @@ describe('PUT /api/users/self', () => {
 
     const updatedUser = response.body
     const usersAfter = await usersInDb()
-    expect(usersAfter.length).toBe(users.length)
-    expect(updatedUser.username).toEqual(targetUser.username)
-    expect(updatedUser.email).toEqual(targetUser.email)
-    expect(updatedUser.lastName).toEqual(targetUser.lastName)
-    expect(updatedUser.firstNames).toEqual(targetUser.firstNames)
+    expect(usersAfter.length).to.equal(users.length)
+    expect(updatedUser.username).to.equal(targetUser.username)
+    expect(updatedUser.email).to.equal(targetUser.email)
+    expect(updatedUser.lastName).to.equal(targetUser.lastName)
+    expect(updatedUser.firstNames).to.equal(targetUser.firstNames)
   })
 
   it('returns error without token', async () => {
@@ -211,10 +212,10 @@ describe('PUT /api/users/self', () => {
       .expect(201)
 
     const updatedUser = response.body
-    expect(updatedUser.username).toEqual(editedUser.username)
-    expect(updatedUser.email).toEqual(editedUser.email)
-    expect(updatedUser.lastName).toEqual(editedUser.lastName)
-    expect(updatedUser.firstNames).toEqual(editedUser.firstNames)
+    expect(updatedUser.username).to.equal(editedUser.username)
+    expect(updatedUser.email).to.equal(editedUser.email)
+    expect(updatedUser.lastName).to.equal(editedUser.lastName)
+    expect(updatedUser.firstNames).to.equal(editedUser.firstNames)
   })
 
   it('does not accept user without email', async () => {
@@ -379,15 +380,15 @@ describe('POST /api/users/register', () => {
     const usersAfter = await usersInDb()
     const newUser = response.body
     const newUserInDb = usersAfter.find(u => u.username === newUser.username)
-    expect(usersAfter.length).toBe(usersBefore.length + 1)
-    expect(newUser.username).toEqual(user.username)
-    expect(newUser.firstNames).toEqual(user.firstNames)
-    expect(newUser.lastName).toEqual(user.lastName)
-    expect(newUser.email).toEqual(user.email)
-    expect(newUserInDb.username).toEqual(user.username)
-    expect(newUserInDb.firstNames).toEqual(user.firstNames)
-    expect(newUserInDb.lastName).toEqual(user.lastName)
-    expect(newUserInDb.email).toEqual(user.email)
+    expect(usersAfter.length).to.equal(usersBefore.length + 1)
+    expect(newUser.username).to.equal(user.username)
+    expect(newUser.firstNames).to.equal(user.firstNames)
+    expect(newUser.lastName).to.equal(user.lastName)
+    expect(newUser.email).to.equal(user.email)
+    expect(newUserInDb.username).to.equal(user.username)
+    expect(newUserInDb.firstNames).to.equal(user.firstNames)
+    expect(newUserInDb.lastName).to.equal(user.lastName)
+    expect(newUserInDb.email).to.equal(user.email)
   })
 
   it('does not accept user without username', async () => {
@@ -406,7 +407,7 @@ describe('POST /api/users/register', () => {
       .expect(400)
 
     const usersAfter = await usersInDb()
-    expect(usersBefore.length).toBe(usersAfter.length)
+    expect(usersBefore.length).to.equal(usersAfter.length)
   })
 
   it('does not accept user with empty string as username', async () => {
@@ -426,7 +427,7 @@ describe('POST /api/users/register', () => {
       .expect(400)
 
     const usersAfter = await usersInDb()
-    expect(usersBefore.length).toBe(usersAfter.length)
+    expect(usersBefore.length).to.equal(usersAfter.length)
   })
 
   it('does not accept username already in use', async () => {
@@ -446,7 +447,7 @@ describe('POST /api/users/register', () => {
       .expect(400)
 
     const usersAfter = await usersInDb()
-    expect(usersBefore.length).toBe(usersAfter.length)
+    expect(usersBefore.length).to.equal(usersAfter.length)
   })
 
   it('does not accept user without email', async () => {
@@ -465,7 +466,7 @@ describe('POST /api/users/register', () => {
       .expect(400)
 
     const usersAfter = await usersInDb()
-    expect(usersBefore.length).toBe(usersAfter.length)
+    expect(usersBefore.length).to.equal(usersAfter.length)
   })
 
   it('does not accept user with empty string as email', async () => {
@@ -485,7 +486,7 @@ describe('POST /api/users/register', () => {
       .expect(400)
 
     const usersAfter = await usersInDb()
-    expect(usersBefore.length).toBe(usersAfter.length)
+    expect(usersBefore.length).to.equal(usersAfter.length)
   })
 
   it('does not accept user with malformed email', async () => {
@@ -505,7 +506,7 @@ describe('POST /api/users/register', () => {
       .expect(400)
 
     const usersAfter = await usersInDb()
-    expect(usersBefore.length).toBe(usersAfter.length)
+    expect(usersBefore.length).to.equal(usersAfter.length)
   })
 
   it('does not accept user without last name', async () => {
@@ -524,7 +525,7 @@ describe('POST /api/users/register', () => {
       .expect(400)
 
     const usersAfter = await usersInDb()
-    expect(usersBefore.length).toBe(usersAfter.length)
+    expect(usersBefore.length).to.equal(usersAfter.length)
   })
 
   it('does not accept user with empty string as last name', async () => {
@@ -544,7 +545,7 @@ describe('POST /api/users/register', () => {
       .expect(400)
 
     const usersAfter = await usersInDb()
-    expect(usersBefore.length).toBe(usersAfter.length)
+    expect(usersBefore.length).to.equal(usersAfter.length)
   })
 
   it('does not accept user without first name', async () => {
@@ -563,7 +564,7 @@ describe('POST /api/users/register', () => {
       .expect(400)
 
     const usersAfter = await usersInDb()
-    expect(usersBefore.length).toBe(usersAfter.length)
+    expect(usersBefore.length).to.equal(usersAfter.length)
   })
 
   it('does not accept user with empty string as first name', async () => {
@@ -583,11 +584,11 @@ describe('POST /api/users/register', () => {
       .expect(400)
 
     const usersAfter = await usersInDb()
-    expect(usersBefore.length).toBe(usersAfter.length)
+    expect(usersBefore.length).to.equal(usersAfter.length)
   })
 
 })
 
-afterAll(async () => {
+after(async () => {
   await server.close()
 })
