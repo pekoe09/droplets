@@ -1,8 +1,8 @@
 const supertest = require('supertest')
-const { app, server } = require('../index')
+const { app, server } = require('../server/index')
 const api = supertest(app)
-const Team = require('../models/team')
-const User = require('../models/user')
+const Team = require('../server/models/team')
+const User = require('../server/models/user')
 
 const initialTeams = [
   {
@@ -37,7 +37,7 @@ const nonExistingID = async () => {
 }
 
 resetTeams = async () => {
-  await Team.remove({})
+  await Team.deleteMany({})
   let users = await User.find({})
   const teamObjects = initialTeams.map(t => new Team(
     {
